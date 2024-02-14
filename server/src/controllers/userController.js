@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const fs = require('fs');
 const path = require('path');
 const { validationResult } = require('express-validator');
+const jsonWebToken = require('jsonwebtoken');
 
 const userController = {
 
@@ -119,6 +120,55 @@ const userController = {
             console.error(error);
         }
 
+    },
+
+    postLoginSession: async (req, res) => {
+        try {   
+            const userEmail = req.body.email;
+            const userPassword = req.body.password;
+
+            const user = await db.User.findOne({
+                where: {
+                    email: userEmail
+                },
+
+                raw: true
+            });
+
+            if (!user || user === null) {
+                res.status(404).json({ sucess: false, error: 'Usuario no existente' });
+            };
+
+            const compareSyncPassword = bcrypt.compareSync(userPassword, user.password);
+
+            if (!compareSyncPassword || compareSyncPassword === false) {
+                res.status(404).json({ sucess: false, error: 'Usuario no coincide' });
+            };
+
+            delete user.password;
+            delete user.avatar;
+            delete user.phone_number;
+
+        
+            const token = jsonWebToken.sign(user, '@asdjasdla_!/(7slDfvc##1335da)=)767');
+
+            if (user) {
+                res.cookie('authToken', token, 
+                { 
+                    maxAge: 900000, 
+                    httpOnly: true,
+                    secure: true
+                });
+            };
+
+            if (user) {
+                req.session.user = user;
+                res.status(200).json({ sucess: true, message: 'Usuario ingreso exitosamente', token });
+            };
+
+        } catch (error) {
+            console.error(error);
+        }
     },
 
     postRegisterUser: async (req, res) => {

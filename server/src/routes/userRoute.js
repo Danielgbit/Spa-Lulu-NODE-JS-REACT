@@ -18,6 +18,8 @@ Router.put('/update/:id', [multerUpload.single('avatar'), updateValidation], use
 
 Router.post('/register', [multerUpload.single('avatar'), createValidation], userController.postRegisterUser);
 
+Router.post('/login', userController.postLoginSession);
+
 Router.delete('/destroy/:id', userController.destroyUser);
 
 
