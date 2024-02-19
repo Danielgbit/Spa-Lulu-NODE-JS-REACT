@@ -7,13 +7,13 @@ const cartController = require('../controllers/cartController');
 
 Router.get('/all', cartController.getAllCart);
 
-Router.get('/detail/:cartId', cartController.getCartDetail);
+Router.get('/detail/:userId', cartController.getCartDetail);
 
 // Create
 
 Router.post('/create/:userId', cartController.postCreateCart);
 
-Router.post('/addProductInCart/:userId', cartController.postCreateProductInCart);
+Router.post('/add/:userId', cartController.postCreateProductInCart);
 
 // Update
 

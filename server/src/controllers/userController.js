@@ -9,6 +9,7 @@ const {
     validationResult
 } = require('express-validator');
 const jwt = require('jsonwebtoken');
+const { use } = require('../routes/mainRoute');
 
 const userController = {
 
@@ -97,17 +98,22 @@ const userController = {
 
         try {
             const token = req.params.token;
-
-            console.log(token);
-
-
+            
             if (token) {
                 jwt.verify(token, '@asdjasdla_!/(7slDfvc##1335da)=)767', (error, decoded) => {
                     if (error) {
                         return res.status(401).json({ success: false, error: 'Token no válido'});
                     }else{
                         const user = decoded;
-                        return res.status(200).json({ success: true, user: user});
+                        const userModified = {
+                            userId: user.user_id,
+                            firstName: user.first_name,
+                            middleName: user.middle_name,
+                            lastName: user.last_name,
+                            email: user.email,
+                            city: user.city
+                        };
+                        return res.status(200).json({ success: true, user: userModified});
                     }
                 })
             }else {
@@ -215,6 +221,34 @@ const userController = {
                 message: 'Usuario ingreso exitosamente',
                 token
             });
+
+
+            const existingCart = await db.Cart.findOne({
+                where: {
+                    user_id: user.user_id
+                }
+            });
+
+            if (!existingCart) {
+                const newCart = {
+                    user_id: user.user_id,
+                };
+                
+                const cartCreate = await db.Cart.create(newCart);
+
+                if (!cartCreate || cartCreate.length === 0) {
+                    res.status(400).json({
+                        success: false,
+                        createError: 'error al crear el carrito'})
+                };
+
+                res.status(201).json({
+                    success: true,
+                    message: '¡Carrito creado exitosamente!',
+                });
+            };
+
+
 
         } catch (error) {
             console.error(error);
@@ -358,6 +392,37 @@ const userController = {
             console.error(error);
         }
     },
+
+    postLogoutSession: async (req, res) => {
+        try {
+            const userId = req.params.id;
+    
+            const user = await db.User.findByPk(userId, {
+                raw: true,
+            });
+    
+            if (!user) {
+                return res.status(404).json({
+                    success: false,
+                    error: 'Usuario no existente',
+                });
+            }
+    
+            res.clearCookie('authToken');
+            req.session.destroy();
+    
+            return res.status(200).json({
+                success: true,
+                message: 'Se removió exitosamente la sesión',
+            });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                errorServer: 'Error interno del servidor',
+            });
+        }
+    },
+    
 
     destroyUser: async (req, res) => {
         try {

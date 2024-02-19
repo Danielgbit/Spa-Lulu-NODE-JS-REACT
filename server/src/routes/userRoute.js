@@ -22,6 +22,8 @@ Router.post('/register', [multerUpload.single('avatar'), createValidation], user
 
 Router.post('/login', userController.postLoginSession);
 
+Router.post('/logout/:id', userController.postLogoutSession);
+
 Router.get('/profile/:token', userController.getProfile);
 
 Router.delete('/destroy/:id', userController.destroyUser);

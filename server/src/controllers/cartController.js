@@ -1,5 +1,10 @@
-const { raw } = require('express');
+const {
+    raw
+} = require('express');
 const db = require('../database/models');
+const {
+    where
+} = require('sequelize');
 
 
 const cartController = {
@@ -12,22 +17,26 @@ const cartController = {
             });
 
             if (!AllCart || AllCart.length === 0) {
-                res.status(400).json({error: 'No se encontro el carrito'})
+                res.status(400).json({
+                    error: 'No se encontro el carrito'
+                })
             };
 
             const cartElementsMap = AllCart.map((cart) => ({
-                cart_id: cart.cart_id ,
-                user_id: cart.user_id ,
-                created_at: cart.created_at ,
+                cart_id: cart.cart_id,
+                user_id: cart.user_id,
+                created_at: cart.created_at,
                 cartDetail: `http://localhost:4000/cartDetail/${cart.cart_id}`
             }));
-    
+
             res.status(200).json({
                 allCarts: cartElementsMap
             });
-            
+
         } catch (error) {
-            res.status(500).json({errorServer: 'Error interno del servidor'})
+            res.status(500).json({
+                errorServer: 'Error interno del servidor'
+            })
             console.error(error);
         };
 
@@ -37,56 +46,61 @@ const cartController = {
 
         try {
 
-            const cartId = req.params.cartId;
+            const userId = req.params.userId;
 
-            const cart = await db.Cart.findByPk(cartId, {
+            const cart = await db.Cart.findOne({
+                where: {
+                    user_id: userId
+                }
+            }, {
                 include: 'cartItems',
                 raw: true,
                 nest: true
             });
 
             if (!cart || cart.length === 0 || cart.length === null) {
-                res.status(400).json
-                ({
+                res.status(400).json({
                     sucess: false,
-                    error: 'No se encontro el carrito' 
+                    error: 'No se encontro el carrito'
                 });
             };
 
             const cartItems = await db.CartItems.findAll({
                 where: {
-                    cart_id: cartId
+                    cart_id: cart.cart_id
                 },
                 raw: true,
                 nest: true
             })
 
-    
+
+            console.log(cartItems);
+
             const cartDetail = {
                 cart_id: cart.cart_id,
                 user_id: cart.user_id,
                 created_at: cart.created_at,
                 lengthItems: cartItems.length,
-                cartItems: Object.values(cartItems).map((value) => (
-                    {
-                        item_id: value.item_id,
-                        cart_id: value.cart_id,
-                        product_id: value.product_id,
-                        quantity: value.quantity,
-                        price: value.price,
-                        created_at: value.created_at,
-                        destroyItem: `http://localhost:4000/destroyProductInCart/${value.item_id}`,
-                        updateItem: `http://localhost:4000/updateItemCart/${value.item_id}`
-                    }
-                ))
+                cartItems: Object.values(cartItems).map((value) => ({
+                    item_id: value.item_id,
+                    cart_id: value.cart_id,
+                    product_id: value.product_id,
+                    quantity: value.quantity,
+                    price: value.price,
+                    created_at: value.created_at,
+                    destroyItem: `http://localhost:4000/destroyProductInCart/${value.item_id}`,
+                    updateItem: `http://localhost:4000/updateItemCart/${value.item_id}`
+                }))
             };
-    
+
             res.status(200).json({
                 cartDetail,
             });
-            
+
         } catch (error) {
-            res.status(500).json({errorServer: 'error interno del servidor'})
+            res.status(500).json({
+                errorServer: 'error interno del servidor'
+            })
             console.error(error);
         }
 
@@ -105,7 +119,8 @@ const cartController = {
             if (!user || user.length === 0) {
                 res.status(400).json({
                     success: false,
-                    error: 'error al crear el para el usuario que no existe'})
+                    error: 'error al crear el para el usuario que no existe'
+                })
             };
 
             const newCart = {
@@ -117,7 +132,8 @@ const cartController = {
             if (!cartCreate || cartCreate.length === 0) {
                 res.status(400).json({
                     success: false,
-                    createError: 'error al crear el carrito'})
+                    createError: 'error al crear el carrito'
+                })
             };
 
             res.status(201).json({
@@ -127,7 +143,9 @@ const cartController = {
 
         } catch (error) {
             console.error(error);
-            res.status(500).json({errorServer: 'Error interno del servidor'});
+            res.status(500).json({
+                errorServer: 'Error interno del servidor'
+            });
         };
     },
 
@@ -144,12 +162,13 @@ const cartController = {
             if (!user || user.length === 0) {
                 res.status(400).json({
                     success: false,
-                    error: 'el usuario no existe'});
+                    error: 'el usuario no existe'
+                });
             };
 
             const cart = await db.Cart.findOne({
                 where: {
-                    user_id : userId
+                    user_id: userId
                 },
                 rew: true
             });
@@ -158,11 +177,11 @@ const cartController = {
             if (!cart || cart.length === 0) {
                 res.status(400).json({
                     success: false,
-                    error: 'el usuario no tiene un carrito existente'});
+                    error: 'el usuario no tiene un carrito existente'
+                });
             };
 
-            const productId = req.body.product_id;
-
+            const productId = req.body.productId;
 
             if (!productId || productId.length === 0) {
                 res.status(400).json({
@@ -170,40 +189,72 @@ const cartController = {
                     error: 'no se suministro un id del producto'
                 });
             };
-            
+
             const productSelected = await db.Product.findByPk(productId, {
                 raw: true,
             });
 
-
-            const newProductInCart = {
-                cart_id: cart.cart_id,
-                product_id: req.body.product_id,
-                quantity: 1,
-                price: productSelected.price
-            };
-
-            const createProductInCart = await db.CartItems.create(newProductInCart);
-
-            if (!createProductInCart || createProductInCart.length === 0) {
-                res.status(400).json({
-                    success: false,
-                    createError: 'error al crear el producto en el carrito'})
-            };
-
-            res.status(201).json({
-                success: true,
-                message: '¡Producto creado correctamente en el carrito!',
+            const searchProductInItemsCart = await db.CartItems.findOne({
+                where: {
+                    product_id: productSelected.product_id
+                },
+                raw: true
             });
 
+            if (!searchProductInItemsCart) {
+
+                const newProductInCart = {
+                    cart_id: cart.cart_id,
+                    product_id: req.body.productId,
+                    quantity: 1,
+                    price: productSelected.price
+                };
+
+                const createProductInCart = await db.CartItems.create(newProductInCart);
+
+                if (!createProductInCart || createProductInCart.length === 0) {
+                    res.status(400).json({
+                        success: false,
+                        createError: 'error al crear el producto en el carrito'
+                    })
+                };
+
+                res.status(201).json({
+                    success: true,
+                    message: '¡Producto creado correctamente en el carrito!',
+                });
+
+
+            } else {
+
+                const updateQuantityProduct = {
+                    quantity: searchProductInItemsCart.quantity + 1
+                };
+
+                const [rowsUpdateProductInCart, updateProductInCart] = await db.CartItems.update(updateQuantityProduct, {
+                    where: {
+                        product_id: searchProductInItemsCart.product_id
+                    }
+                });
+
+                res.status(200).json({
+                    success: true,
+                    message: '¡Producto actualizado correctamente en el carrito!',
+                });
+            }
+
+
+
         } catch (error) {
-            res.status(500).json({errorServer: 'error interno del servidor'});
+            res.status(500).json({
+                errorServer: 'error interno del servidor'
+            });
             console.error(error);
         };
     },
 
     updateProductInCart: async (req, res) => {
-        
+
         try {
 
             const itemCartId = req.params.itemCartId;
@@ -216,10 +267,10 @@ const cartController = {
                 raw: true
             });
 
-            if (!cart || cart.length === 0 || cart === null ) {
+            if (!cart || cart.length === 0 || cart === null) {
                 res.status(404).json({
-                    success: false, 
-                    error: 'El usuario no tiene un carrito' 
+                    success: false,
+                    error: 'El usuario no tiene un carrito'
                 });
             };
 
@@ -231,10 +282,10 @@ const cartController = {
                 raw: true
             });
 
-            if (!itemCart || itemCart.length === 0 || itemCart === null ) {
+            if (!itemCart || itemCart.length === 0 || itemCart === null) {
                 res.status(404).json({
-                    success: false, 
-                    error: 'No exite el producto en el carrito' 
+                    success: false,
+                    error: 'No exite el producto en el carrito'
                 });
             };
 
@@ -245,7 +296,7 @@ const cartController = {
 
             if (action === 'increment') {
                 updateItemCartQuantity.quantity = itemCart.quantity + 1;
-            }else if (action === 'decrement') {
+            } else if (action === 'decrement') {
                 updateItemCartQuantity.quantity = itemCart.quantity - 1;
             }
 
@@ -259,18 +310,20 @@ const cartController = {
 
             if (rowsUpdate === 0) {
                 res.status(500).json({
-                    success: false, 
+                    success: false,
                     error: 'error interno, no se puedo actualizar el producto en el carrito',
                 });
             };
 
             res.status(200).json({
-                success: true, 
+                success: true,
                 message: 'se actualizo correctamente el producto en el carrito',
             });
-            
+
         } catch (error) {
-            res.status(500).json({errorServer: 'error interno del servidor'})
+            res.status(500).json({
+                errorServer: 'error interno del servidor'
+            })
             console.error(error);
         }
     },
@@ -284,7 +337,7 @@ const cartController = {
             const cart = await db.Cart.findByPk(cartId, {
                 raw: true
             });
-            
+
 
             if (!cart || cart.length === 0) {
                 return res.status(404).json({
@@ -302,7 +355,7 @@ const cartController = {
 
 
             if (Object.values(cartItems).length > 0) {
-                
+
                 await db.CartItems.destroy({
                     where: {
                         cart_id: cartId
@@ -344,7 +397,7 @@ const cartController = {
             const CartItems = await db.CartItems.findByPk(itemId, {
                 raw: true
             });
-            
+
 
             if (!CartItems || CartItems.length === 0) {
                 return res.status(404).json({
