@@ -58,7 +58,7 @@ const cartController = {
                 nest: true
             });
 
-            if (!cart || cart.length === 0 || cart.length === null) {
+            if (!cart) {
                 res.status(400).json({
                     sucess: false,
                     error: 'No se encontro el carrito'
@@ -69,37 +69,36 @@ const cartController = {
                 where: {
                     cart_id: cart.cart_id
                 },
+                include: 'products',
                 raw: true,
                 nest: true
             })
 
-
-            console.log(cartItems);
-
             const cartDetail = {
-                cart_id: cart.cart_id,
-                user_id: cart.user_id,
-                created_at: cart.created_at,
+                cartId: cart.cart_id,
+                userId: cart.user_id,
+                createdAt: cart.created_at,
                 lengthItems: cartItems.length,
                 cartItems: Object.values(cartItems).map((value) => ({
-                    item_id: value.item_id,
-                    cart_id: value.cart_id,
-                    product_id: value.product_id,
+                    itemId: value.item_id,
+                    cartId: value.cart_id,
+                    productId: value.product_id,
+                    productName: value.products.product_name,
                     quantity: value.quantity,
                     price: value.price,
-                    created_at: value.created_at,
+                    image: `http://localhost:4000/product/image/${value.products.product_id}`,
                     destroyItem: `http://localhost:4000/destroyProductInCart/${value.item_id}`,
                     updateItem: `http://localhost:4000/updateItemCart/${value.item_id}`
                 }))
             };
 
             res.status(200).json({
-                cartDetail,
+                cartDetail
             });
 
         } catch (error) {
             res.status(500).json({
-                errorServer: 'error interno del servidor'
+                error: 'error interno del servidor'
             })
             console.error(error);
         }
@@ -289,6 +288,8 @@ const cartController = {
                 });
             };
 
+            console.log(itemCart);
+
             const action = req.body.action;
 
             const updateItemCartQuantity = {};
@@ -296,11 +297,11 @@ const cartController = {
 
             if (action === 'increment') {
                 updateItemCartQuantity.quantity = itemCart.quantity + 1;
+                updateItemCartQuantity.price = itemCart.price * itemCart.quantity;
             } else if (action === 'decrement') {
                 updateItemCartQuantity.quantity = itemCart.quantity - 1;
-            }
-
-            console.log('updateItemCartQuantity', updateItemCartQuantity);
+                updateItemCartQuantity.price = itemCart.price * itemCart.quantity;
+            };
 
             const [rowsUpdate, updateCartItems] = await db.CartItems.update(updateItemCartQuantity, {
                 where: {
@@ -398,15 +399,12 @@ const cartController = {
                 raw: true
             });
 
-
             if (!CartItems || CartItems.length === 0) {
                 return res.status(404).json({
                     success: false,
                     error: 'No se encontro el producto en el carrito'
                 });
             };
-
-            console.log('CARTITEMS', CartItems);
 
             const cartItemDestroy = await db.CartItems.destroy({
                 where: {
