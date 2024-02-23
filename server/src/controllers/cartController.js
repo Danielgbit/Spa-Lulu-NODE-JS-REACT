@@ -288,22 +288,16 @@ const cartController = {
                 });
             };
 
-            console.log(itemCart);
-
             const action = req.body.action;
-
-            const updateItemCartQuantity = {};
-
+            const updateItemCart = {};
 
             if (action === 'increment') {
-                updateItemCartQuantity.quantity = itemCart.quantity + 1;
-                updateItemCartQuantity.price = itemCart.price * itemCart.quantity;
+                updateItemCart.quantity = itemCart.quantity + 1;
             } else if (action === 'decrement') {
-                updateItemCartQuantity.quantity = itemCart.quantity - 1;
-                updateItemCartQuantity.price = itemCart.price * itemCart.quantity;
+                updateItemCart.quantity = itemCart.quantity - 1;
             };
 
-            const [rowsUpdate, updateCartItems] = await db.CartItems.update(updateItemCartQuantity, {
+            const [rowsUpdate, updateCartItems] = await db.CartItems.update(updateItemCart, {
                 where: {
                     item_id: itemCart.item_id
                 }
@@ -315,6 +309,8 @@ const cartController = {
                     error: 'error interno, no se puedo actualizar el producto en el carrito',
                 });
             };
+
+
 
             res.status(200).json({
                 success: true,
