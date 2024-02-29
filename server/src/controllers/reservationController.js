@@ -11,8 +11,6 @@ const servicesController = {
                 nest: true
             });
 
-            console.log('allReservations', allReservations);
-
             if (!allReservations || allReservations === null || allReservations.length === 0) {
                 res.status(400).json({error: 'No se encontraron reservas'});
             };

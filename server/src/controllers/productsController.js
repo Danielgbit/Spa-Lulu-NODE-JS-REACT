@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const { validationResult } = require('express-validator');
 const { Op } = require('sequelize');
+const { log } = require('console');
 
 
 const productsController = {
@@ -11,6 +12,8 @@ const productsController = {
 
         try {
             const allProducts = await db.Product.findAll({
+                include: 'productsCategory',
+                nest: true,
                 raw: true
             });
 
@@ -46,16 +49,56 @@ const productsController = {
                 productName: product.product_name ,
                 description: product.description,
                 price: product.price ,
+                categoryId: product.category_id,
+                categoryName: product.productsCategory.category_name,
+                image: `http://localhost:4000/product/image/${product.product_id}`,
+                productDetail: `http://localhost:4000/productDetail/${product.product_id}`
+            }));
+
+
+            const allProductsLimitMap = allProductsLimit.map((product) => ({
+                productId: product.product_id ,
+                productName: product.product_name ,
+                description: product.description,
+                price: product.price ,
                 categoryId: product.category_id ,
                 image: `http://localhost:4000/product/image/${product.product_id}`,
                 productDetail: `http://localhost:4000/productDetail/${product.product_id}`
             }))
     
             res.status(200).json({
-                allProductsLimit: allProductsLimit,
+                allProductsLimit: allProductsLimitMap,
                 allProducts: allProductsMap,
                 allCategories: allCategories,
                 categoryProducts
+            });
+            
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({errorServer: 'Error interno del servidor'})
+        };
+
+    },
+
+    getAllCategories: async (req, res) => {
+
+        try {
+            const allCategories = await db.ProductCategory.findAll({
+                raw: true
+            });
+
+            if (!allCategories) {
+                res.status(400).json({error: 'No se encontraron las categorias'})
+            };
+
+            
+            const allCategoriesMap = allCategories.map((category) => ({
+                categoryId: category.category_id,
+                categoryName: category.category_name
+            }));
+    
+            res.status(200).json({
+                allCategories: allCategoriesMap,
             });
             
         } catch (error) {
@@ -89,7 +132,6 @@ const productsController = {
                 nest: true
             });
 
-
             const categoryProductsMap = categoryProducts.map((category) => ({
                 categoryId: category.category_id,
                 productId: category.categoryProducts.product_id,
@@ -99,7 +141,7 @@ const productsController = {
                 image: `http://localhost:4000/category/image/${category.categoryProducts.product_id}`,
                 productDetail: `http://localhost:4000/productDetail/${category.categoryProducts.product_id}`
             }));
-    
+            
             res.status(200).json({
                 length: categoryProductsMap.length,
                 categoryName: categoryName.category_name,
@@ -246,7 +288,7 @@ const productsController = {
             );
 
             if (result.errors.length > 0) {
-                return res.status(400).json(resultErrorsMap);
+                return res.status(400).json({ errors: resultErrorsMap});
             };
 
 
@@ -254,7 +296,7 @@ const productsController = {
                 product_name: req.body.name,
                 description: req.body.description,
                 price: req.body.price,
-                category_id: req.body.category_id,
+                category_id: req.body.categoryId,
                 image: req.file.filename
             };
 
@@ -288,10 +330,10 @@ const productsController = {
                     const pathImage = path.join(__dirname, '..', '..', 'public', 'imgs', 'products', req.file.filename);
                     fs.unlinkSync(pathImage) 
                     const resultErrorsMap = result.errors.map((error) => ({ [error.path]: error.msg })); 
-                    return res.status(400).json(resultErrorsMap);
+                    return res.status(400).json({ errors: resultErrorsMap});
                 }else{
                     const resultErrorsMap = result.errors.map((error) => ({ [error.path]: error.msg })); 
-                    return res.status(400).json(resultErrorsMap);
+                    return res.status(400).json({ errors: resultErrorsMap});
                 };
             };
 

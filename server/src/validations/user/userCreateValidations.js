@@ -1,19 +1,19 @@
 const { body } = require('express-validator');
 
 const userCreateValidation = [
-    body('first_name')
+    body('firstName')
     .notEmpty().withMessage('El nombre es obligatorio.')
     .isLength({ max: 50 }).withMessage('El nombre no debe exceder los 50 caracteres.'),
 
-  body('middle_name')
+  body('middleName')
     .optional({ nullable: true, checkFalsy: true })
     .isLength({ max: 50 }).withMessage('El segundo nombre no debe exceder los 50 caracteres.'),
 
-  body('last_name')
+  body('lastName')
     .notEmpty().withMessage('El apellido es obligatorio.')
     .isLength({ max: 50 }).withMessage('El apellido no debe exceder los 50 caracteres.'),
 
-  body('phone_number')
+  body('phoneNumber')
     .notEmpty().withMessage('El número de teléfono es obligatorio.')
     .isMobilePhone('any', { strictMode: false })
     .withMessage('Ingresa un número de teléfono móvil válido.'),

@@ -205,7 +205,7 @@ const cartController = {
                 const newProductInCart = {
                     cart_id: cart.cart_id,
                     product_id: req.body.productId,
-                    quantity: 1,
+                    quantity: 1 || Number(req.body.quantity),
                     price: productSelected.price
                 };
 

@@ -8,10 +8,10 @@ const productCreateValidation = [
     .notEmpty().withMessage('La descripción del producto es obligatoria.'),
 
     body('price')
-    .notEmpty().withMessage('El precio del producto es obligatorio.')
+    .notEmpty().withMessage('El precio del producto es obligatorio.').bail()
     .isNumeric().withMessage('El precio del producto debe ser un valor numérico válido.'),
 
-    body('category_id')
+    body('categoryId')
     .notEmpty().withMessage('La categoría es obligatoria, Debes seleccionar una categoria.').bail()
     .isInt().withMessage('Debes seleccionar una categoria.'),
 

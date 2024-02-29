@@ -126,14 +126,14 @@ const clientController = {
             }));
 
             if (result.errors.length > 0) {
-                return res.status(400).json(resultErrorsMap);
+                return res.status(400).json({ errors: resultErrorsMap });
             };
 
             const newClient = {
-                first_name: req.body.first_name,
-                middle_name: req.body.middle_name,
-                last_name: req.body.last_name,
-                phone_number: req.body.phone_number,
+                first_name: req.body.firstName,
+                middle_name: req.body.middleName,
+                last_name: req.body.lastName,
+                phone_number: req.body.phoneNumber,
                 email: req.body.email,
             };
 

@@ -21,16 +21,18 @@ const appointmentsController = {
                 })
             };
 
+
             const appointmentElementsMap = allAppointment.map((appointment) => ({
-                appointment_id: appointment.appointment_id,
+                appointmentId: appointment.appointment_id,
                 client: `${appointment.appointmentClient.first_name} ${appointment.appointmentClient.middle_name} ${appointment.appointmentClient.last_name}`,
                 service: appointment.appointmentService.service_name,
                 employee: appointment.appointmentEmployee.full_name,
-                duration_minutes: appointment.duration_minutes,
+                durationMinutes: appointment.duration_minutes,
                 notes: appointment.notes,
-                is_paid: appointment.is_paid === 0 ? false : true,
+                isPaid: appointment.is_paid === 0 ? false : true,
                 status: appointment.status,
                 reminder: appointment.reminder === 0 ? false : true,
+                
                 appointmentDetail: `http://localhost:4000/appointmentDetail/${appointment.appointment_id}`
             }));
 
@@ -102,12 +104,15 @@ const appointmentsController = {
 
 
             const appointmentDetail = {
-                appointment_id: appointment.appointment_id,
+                appointmentId: appointment.appointment_id,
+                clientId: appointment.client_id,
+                serviceId: appointment.service_id,
+                employeeId: appointment.employee_id,
                 client: `${appointment.appointmentClient.first_name} ${appointment.appointmentClient.middle_name} ${appointment.appointmentClient.last_name}`,
                 service: appointment.appointmentService.service_name,
                 employee: appointment.appointmentEmployee.full_name,
                 notes: appointment.notes,
-                is_paid: appointment.is_paid === 0 ? false : true,
+                isPaid: appointment.is_paid === 0 ? false : true,
                 status: appointment.status,
                 reminder: appointment.reminder === 0 ? false : true,
                 infoAppointment: {
@@ -115,7 +120,7 @@ const appointmentsController = {
                     day: availability.day,
                     startTime: availability.start_time,
                     endTime: availability.end_time,
-                    duration_minutes: appointment.duration_minutes,
+                    durationMinutes: appointment.duration_minutes,
                     hour: availability.hour,
                 },
                 appointmentDestroy: `http://localhost:4000/destroyAppointment/${appointment.appointment_id}`,
@@ -147,18 +152,18 @@ const appointmentsController = {
             }));
 
             if (result.errors.length > 0) {
-                return res.status(400).json(resultErrorsMap);
+                return res.status(400).json({ errors: resultErrorsMap });
             };
 
             const newAppointment = {
-                client_id: req.body.client_id,
-                service_id: req.body.service_id,
-                employee_id: req.body.employee_id,
+                client_id: req.body.clientId,
+                service_id: req.body.serviceId,
+                employee_id: req.body.employeeId,
                 duration_minutes: null,
                 notes: req.body.notes,
                 status: req.body.status,
                 reminder: req.body.reminder,
-                is_paid: req.body.is_paid
+                is_paid: req.body.isPaid
             };
 
             const service = await db.Service.findByPk(newAppointment.service_id, {
@@ -195,7 +200,7 @@ const appointmentsController = {
 
 
             const availability = {
-                employee_id: req.body.employee_id,
+                employee_id: req.body.employeeId,
                 month: req.body.month,
                 day: req.body.day,
                 hour: req.body.hour,
@@ -241,7 +246,7 @@ const appointmentsController = {
             }));
 
             if (result.errors.length > 0) {
-                return res.status(400).json(resultErrorsMap);
+                return res.status(400).json({ errors: resultErrorsMap});
             };
 
             const appointmentId = req.params.id;
@@ -257,14 +262,14 @@ const appointmentsController = {
             };
 
             const appointmentUpdate = {
-                client_id: req.body.client_id,
-                service_id: req.body.service_id,
-                employee_id: req.body.employee_id,
+                client_id: req.body.clientId,
+                service_id: req.body.serviceId,
+                employee_id: req.body.employeeId,
                 duration_minutes: null,
                 notes: req.body.notes,
                 status: req.body.status,
                 reminder: req.body.reminder,
-                is_paid: req.body.is_paid
+                is_paid: req.body.isPaid
             };
 
             const service = await db.Service.findByPk(appointmentUpdate.service_id, {
@@ -296,7 +301,7 @@ const appointmentsController = {
 
 
             const availabilityUpdate = {
-                employee_id: req.body.employee_id,
+                employee_id: req.body.employeeId,
                 month: req.body.month,
                 day: req.body.day,
                 hour: hourString,
@@ -307,16 +312,9 @@ const appointmentsController = {
 
             const [rowsUpdateAvailability, updateAvailability] = await db.Availability.update(availabilityUpdate, {
                 where: {
-                    employee_id: req.body.employee_id
+                    employee_id: req.body.employeeId
                 }
             });
-
-            if (rowsUpdateAvailability === 0 && rowsUpdate === 0) {
-                return res.status(500).json({
-                    success: false,
-                    error: 'No se modifico ningun campo',
-                });
-            };
 
 
             res.status(200).json({

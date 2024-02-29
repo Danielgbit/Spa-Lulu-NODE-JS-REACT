@@ -9,6 +9,8 @@ const updateValidation = require('../validations/product/productUpdateValidation
 
 Router.get('/all', productsController.getAllProducts);
 
+Router.get('/categories/all', productsController.getAllCategories);
+
 Router.get('/search', productsController.getSearchProducts);
 
 Router.get('/category/:id', productsController.getCategoryProducts);
