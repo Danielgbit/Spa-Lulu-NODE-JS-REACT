@@ -51,6 +51,8 @@ module.exports = (sequelize, dataTypes) => {
             as: 'availabilityEmployee',
             foreignKey: 'employee_id'
         });
+
+        
     };
 
     return Availability; 

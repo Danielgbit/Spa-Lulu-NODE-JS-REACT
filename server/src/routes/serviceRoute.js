@@ -9,6 +9,8 @@ const updateValidations = require('../validations/service/serviceUpdateValidatio
 
 Router.get('/all', serviceController.getAllServices);
 
+Router.get('/category/all', serviceController.getAllCategories);
+
 Router.get('/category/:id', serviceController.getCategoryServices);
 
 Router.get('/detail/:id', serviceController.getServiceDetail);

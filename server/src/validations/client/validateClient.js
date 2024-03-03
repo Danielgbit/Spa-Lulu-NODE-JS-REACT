@@ -15,11 +15,11 @@ const validateClient = [
     .isLength({ min: 2, max: 50 }).withMessage('El apellido debe tener entre 2 y 50 caracteres'),
 
   body('phoneNumber')
-    .optional()
+    .notEmpty().withMessage('El telefono es obligatorio').bail()
     .isMobilePhone().withMessage('Formato de número de teléfono no válido'),
 
   body('email')
-    .optional()
+    .notEmpty().withMessage('El email es obligatorio').bail()
     .isEmail().withMessage('Dirección de correo electrónico no válida'),
 
 ];

@@ -59,51 +59,42 @@ const clientController = {
                 });
             };
 
-            const service = await db.Service.findByPk(client.clientAppointment.service_id, {
-                raw: true,
-            });
+            let service = null
 
-            if (!service || service.length === 0 || service === null) {
-                res.status(400).json({
-                    sucess: false,
-                    error: 'No se encontro el servicio asociado al cliente'
+            if (client.clientAppointment) {
+                service = await db.Service.findByPk(client.clientAppointment.service_id, {
+                    raw: true,
                 });
             };
-
             
             const employee = await db.Employee.findByPk(client.clientAppointment.employee_id, {
                 raw: true,
             });
 
-            if (!employee || employee.length === 0 || employee === null) {
-                res.status(400).json({
-                    sucess: false,
-                    error: 'No se encontro el profesional de belleza asociado al cliente'
-                });
-            };
-
-
             const clientDetail = {
                 clientId : client.client_id,
                 fullName: `${client.first_name} ${client.middle_name} ${client.last_name}`,
+                firstName: client.first_name,
+                middleName: client.middle_name,
+                lastName: client.last_name,
                 phoneNumber: client.phone_number,
                 email: client.email,
-                appointment: {  
-                    appointmentId: client.clientAppointment.appointment_id,
-                    serviceName: service.service_name,
-                    employeeName: employee.full_name,
-                    durationMinutes: client.clientAppointment.duration_minutes,
-                    notes: client.clientAppointment.notes,
-                    isPaid: client.clientAppointment.is_paid === 0 ? false : true,
-                    reminder: client.clientAppointment.reminder === 0 ? false : true
-                },
+                appointment: client.clientAppointment.appointment_id ? {  
+                    appointmentId: client.clientAppointment && client.clientAppointment.appointment_id,
+                    serviceName: service ? service.service_name : null,
+                    employeeName: employee && employee.full_name,
+                    durationMinutes: client.clientAppointment && client.clientAppointment.duration_minutes,
+                    notes: client.clientAppointment && client.clientAppointment.notes,
+                    isPaid: client.clientAppointment && client.clientAppointment.is_paid === 0 ? false : true,
+                    reminder: client.clientAppointment && client.clientAppointment.reminder === 0 ? false : true
+                } : null,
                 updateClient: `http://localhost:4000/client/update/${client.client_id}`,
                 destroyClient: `http://localhost:4000/client/destroy/${client.client_id}`
             };
             
 
             res.status(200).json({
-                clientDetail,
+                clientDetail
             });
 
         } catch (error) {
@@ -172,7 +163,7 @@ const clientController = {
             }));
 
             if (result.errors.length > 0) {
-                return res.status(400).json(resultErrorsMap);
+                return res.status(400).json({ errors: resultErrorsMap});
             };
 
             const clientId = req.params.id;
@@ -195,10 +186,10 @@ const clientController = {
             };
 
             const clientUpdate = {
-                first_name: req.body.first_name,
-                middle_name: req.body.middle_name,
-                last_name: req.body.last_name,
-                phone_number: req.body.phone_number,
+                first_name: req.body.firstName,
+                middle_name: req.body.middleName,
+                last_name: req.body.lastName,
+                phone_number: req.body.phoneNumber,
                 email: req.body.email,
             };
 

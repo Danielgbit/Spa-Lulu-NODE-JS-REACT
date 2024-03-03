@@ -16,10 +16,11 @@ const appointmentsController = {
             });
 
             if (!allAppointment || allAppointment.length === 0 || allAppointment === null) {
-                res.status(400).json({
+                return res.status(400).json({
                     error: 'No se encontro la cita'
-                })
+                });
             };
+
 
 
             const appointmentElementsMap = allAppointment.map((appointment) => ({
@@ -32,36 +33,11 @@ const appointmentsController = {
                 isPaid: appointment.is_paid === 0 ? false : true,
                 status: appointment.status,
                 reminder: appointment.reminder === 0 ? false : true,
-                
                 appointmentDetail: `http://localhost:4000/appointmentDetail/${appointment.appointment_id}`
             }));
 
-            const allEmployees = await db.Employee.findAll({
-                include: 'employeeAvailability',
-                raw: true,
-                nest: true
-            });
-
-            const employeeElementsMap = allEmployees.map((employee) => ({
-                employeeId: employee.employee_id,
-                fullName: employee.full_name,
-                phoneNumber: employee.phone_number,
-                email: employee.email,
-                position: employee.position,
-                biography: employee.biography,
-                availability: {
-                    month: employee.employeeAvailability.month,
-                    day: employee.employeeAvailability.day,
-                    startTime: employee.employeeAvailability.start_time,
-                    endTime: employee.employeeAvailability.end_time,
-                    hour: employee.employeeAvailability.hour
-                }
-            }));
-
-                
-
+            
             res.status(200).json({
-                allEmployees: employeeElementsMap,
                 allAppointments: appointmentElementsMap
             });
 
@@ -87,7 +63,7 @@ const appointmentsController = {
             });
 
             if (!appointment || appointment.length === 0 || appointment === null) {
-                res.status(400).json({
+                return res.status(400).json({
                     sucess: false,
                     error: 'No se encontro la cita'
                 });
@@ -115,14 +91,14 @@ const appointmentsController = {
                 isPaid: appointment.is_paid === 0 ? false : true,
                 status: appointment.status,
                 reminder: appointment.reminder === 0 ? false : true,
-                infoAppointment: {
+                infoAppointment: availability ? {
                     month: availability.month,
                     day: availability.day,
                     startTime: availability.start_time,
                     endTime: availability.end_time,
                     durationMinutes: appointment.duration_minutes,
                     hour: availability.hour,
-                },
+                } : null,
                 appointmentDestroy: `http://localhost:4000/destroyAppointment/${appointment.appointment_id}`,
                 appointmentUpdate: `http://localhost:4000/appointmentUpdate/${appointment.appointment_id}`,
 
@@ -403,6 +379,79 @@ const appointmentsController = {
                 error: 'error interno del servidor'
             });
         };
+    },
+
+
+
+    getAllEmployees: async (req, res) => {
+
+        try {
+            const allEmployees = await db.Employee.findAll({
+                raw: true,
+                nest: true
+            });
+
+            if (!allEmployees) {
+                res.status(400).json({ error: 'No hay empleados registrados', success: false });
+            };
+
+            const employeeElementsMap = allEmployees.map((employee) => ({
+                employeeId: employee.employee_id,
+                fullName: employee.full_name,
+                phoneNumber: employee.phone_number,
+                email: employee.email,
+                position: employee.position,
+                biography: employee.biography,
+            }));
+
+                
+
+            res.status(200).json({ allEmployees: employeeElementsMap });
+
+        } catch (error) {
+            res.status(500).json({
+                errorServer: 'Error interno del servidor'
+            })
+            console.error(error);
+        };
+
+    },
+
+    getAvailabilityEmployee: async (req, res) => {
+
+        try {
+            const id = req.params.id;
+
+
+            const employeeData = await db.Employee.findAll({
+                where: {
+                    employee_id: id
+                },
+                include: [
+                    {
+                        model: db.Availability,
+                        as: 'employeeAvailability'
+                    },
+                    {
+                        model: db.Appointment,
+                        as: 'employeeAppointment'
+                    }
+                ],
+                nest: true
+            });
+
+
+            res.status(200).json({
+                combinedEmployeeData
+            });
+
+        } catch (error) {
+            res.status(500).json({
+                errorServer: 'Error interno del servidor'
+            })
+            console.error(error);
+        };
+
     },
 
 };

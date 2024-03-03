@@ -9,6 +9,11 @@ const validateUpdate = require('../validations/appointments/validateAppointUpdat
 
 // Gets
 Router.get('/all', appointmentsController.getAllAppointments);
+
+Router.get('/employees/all', appointmentsController.getAllEmployees);
+
+Router.get('/availabilities/:id', appointmentsController.getAvailabilityEmployee);
+
 Router.get('/detail/:id', appointmentsController.getAppointmentDetail);
 
 // Create

@@ -1,7 +1,7 @@
 const { body } = require('express-validator');
 
 const serviceCreateValidations = [
-    body('service_name')
+    body('serviceName')
         .notEmpty()
         .withMessage('El nombre del servicio es obligatorio'),
 
@@ -9,19 +9,16 @@ const serviceCreateValidations = [
         .notEmpty()
         .withMessage('La descripción del servicio es obligatoria'),
 
-    body('duration_minutes')
+    body('durationMinutes')
         .notEmpty()
-        .isInt({ min: 1 })
         .withMessage('La duración en minutos debe ser un número entero mayor que 0'),
 
     body('price')
         .notEmpty()
-        .isFloat({ min: 0 })
         .withMessage('El precio debe ser un número mayor o igual a 0'),
 
-    body('category_id')
+    body('categoryId')
         .notEmpty()
-        .isInt({ min: 1 })
         .withMessage('El ID de categoría debe ser un número entero mayor que 0'),
 
     body('image').custom((value, { req }) => {

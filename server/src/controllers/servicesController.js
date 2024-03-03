@@ -9,6 +9,8 @@ const servicesController = {
 
         try {
             const allServices = await db.Service.findAll({
+                include: 'serviceCategory',
+                nest: true,
                 raw: true
             });
 
@@ -25,14 +27,6 @@ const servicesController = {
                 res.status(400).json({error: 'No se encontraron servicios'})
             };
 
-            const allCategories = await db.ServiceCategory.findAll({
-                raw: true
-            });
-
-            if (!allCategories) {
-                res.status(400).json({error: 'No se encontraron las categorias'})
-            };
-
             const allServicesMap = allServices.map((service) => ({
                 serviceId: service.service_id ,
                 serviceName: service.service_name ,
@@ -41,6 +35,7 @@ const servicesController = {
                 price: service.price ,
                 createdAt: service.created_at ,
                 categoryId: service.category_id ,
+                categoryName: service.serviceCategory.category_name,
                 image: `http://localhost:4000/image/${service.service_id}`,
                 serviceDetail: `http://localhost:4000/serviceDetail/${service.service_id}`
             }))
@@ -48,7 +43,33 @@ const servicesController = {
             res.status(200).json({
                 allServicesLimit: allServicesLimit,
                 allServices: allServicesMap,
-                allCategories: allCategories
+            });
+            
+        } catch (error) {
+            res.status(500).json({errorServer: 'error interno del servidor'})
+            console.error(error);
+        };
+
+    },
+
+    getAllCategories: async (req, res) => {
+
+        try {
+            const allCategories = await db.ServiceCategory.findAll({
+                raw: true
+            });
+
+            if (!allCategories) {
+                res.status(400).json({error: 'No se encontraron las categorias'})
+            };
+
+            const allCategoriesMap = allCategories.map((category) => ({
+                categoryId: category.category_id,
+                categoryName: category.category_name
+            }));
+    
+            res.status(200).json({
+                allCategories: allCategoriesMap
             });
             
         } catch (error) {
@@ -202,15 +223,15 @@ const servicesController = {
             }));
 
             if (result.errors.length > 0 ) {
-                return res.status(400).json(resultErrorsMap);
+                return res.status(400).json({ errors: resultErrorsMap});
             };
 
             const newService = {
-                service_name: req.body.service_name,
+                service_name: req.body.serviceName,
                 description: req.body.description,
-                duration_minutes: req.body.duration_minutes,
+                duration_minutes: req.body.durationMinutes,
                 price: req.body.price,
-                category_id: req.body.category_id,
+                category_id: req.body.categoryId,
                 image: req.file.filename
             };
 
@@ -244,10 +265,10 @@ const servicesController = {
                     const pathImage = path.join(__dirname, '..', '..', 'public', 'imgs', 'services', req.file.filename);
                     fs.unlinkSync(pathImage) 
                     const resultErrorsMap = result.errors.map((error) => ({ [error.path]: error.msg })); 
-                    return res.status(400).json(resultErrorsMap);
+                    return res.status(400).json({ errors: resultErrorsMap});
                 }else{
                     const resultErrorsMap = result.errors.map((error) => ({ [error.path]: error.msg })); 
-                    return res.status(400).json(resultErrorsMap);
+                    return res.status(400).json({ errors: resultErrorsMap});
                 };
             };
 
@@ -272,11 +293,11 @@ const servicesController = {
 
             const serviceUpdate = {
                 service_id: serviceId,
-                service_name: req.body.service_name,
+                service_name: req.body.serviceName,
                 description: req.body.description,
-                duration_minutes: req.body.duration_minutes,
+                duration_minutes: req.body.durationMinutes,
                 price: req.body.price,
-                category_id: req.body.category_id,
+                category_id: req.body.categoryId,
                 image: req.file ? req.file.filename : service.image
             }
 
