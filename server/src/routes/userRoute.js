@@ -4,7 +4,9 @@ const userController = require('../controllers/userController');
 const multerUpload = require('../middlewares/multerUsers');
 const createValidation = require('../validations/user/userCreateValidations');
 const updateValidation = require('../validations/user/userUpdateValidations');
-const authTokenMiddleware = require('../middlewares/authToken');
+const loginValidations = require('../validations/user/loginValidations');
+const validateToken = require('../middlewares/validateToken');
+
 
 
 
@@ -20,11 +22,13 @@ Router.put('/update/:id', [multerUpload.single('avatar'), updateValidation], use
 
 Router.post('/register', [multerUpload.single('avatar'), createValidation], userController.postRegisterUser);
 
-Router.post('/login', userController.postLoginSession);
+Router.post('/login', loginValidations, userController.postLoginSession);
 
 Router.post('/logout/:id', userController.postLogoutSession);
 
-Router.get('/profile/:token', userController.getProfile);
+Router.get('/profile', validateToken, userController.getProfile);
+
+Router.get('/verify', validateToken, userController.getVerifyToken);
 
 Router.delete('/destroy/:id', userController.destroyUser);
 

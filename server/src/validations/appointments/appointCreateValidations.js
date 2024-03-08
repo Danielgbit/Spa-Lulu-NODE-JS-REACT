@@ -23,17 +23,6 @@ const appointmentsCreateValidation = [
 
   body('isPaid')
     .notEmpty().withMessage('El campo de pago no puede estar vacío.').bail(),
-
-  body('hour')
-    .notEmpty().withMessage('El campo hora no puede estar vacío.').bail()
-    .isString().withMessage('El campo hora debe ser una cadena de caracteres con formato de hora válido (por ejemplo, "14:30:10").'),
-
-  body('month')
-    .notEmpty().withMessage('El campo mes no puede estar vacío.').bail(),
-
-  body('day')
-    .notEmpty().withMessage('El campo dia no puede estar vacío.').bail()
-    .isInt({ min: 1, max: 31 }).withMessage('El campo dia debe ser un número entero entre 1 y 31.'),
 ];
 
 module.exports = appointmentsCreateValidation;

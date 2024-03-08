@@ -138,8 +138,8 @@ const productsController = {
                 productName: category.categoryProducts.product_name,
                 description: category.categoryProducts.description,
                 price: category.categoryProducts.price,
-                image: `http://localhost:4000/category/image/${category.categoryProducts.product_id}`,
-                productDetail: `http://localhost:4000/productDetail/${category.categoryProducts.product_id}`
+                image: `http://localhost:4000/product/image/${category.categoryProducts.product_id}`,
+                productDetail: `http://localhost:4000/product/detail/${category.categoryProducts.product_id}`
             }));
             
             res.status(200).json({

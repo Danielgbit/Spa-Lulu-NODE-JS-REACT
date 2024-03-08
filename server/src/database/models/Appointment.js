@@ -77,6 +77,14 @@ module.exports = (sequelize, dataTypes) => {
     const Appointment = sequelize.define(alias, cols, config);
 
     Appointment.associate = (models) => {
+
+        Appointment.belongsToMany(models.Availability, {
+            through: 'AppointmentAvailability',
+            foreignKey: 'appointment_id',
+            otherKey: 'availability_id',
+            as: 'appointmentAvailabilities',
+        });
+
         Appointment.belongsTo(models.Employee, {
             as: 'appointmentEmployee',
             foreignKey: 'employee_id'

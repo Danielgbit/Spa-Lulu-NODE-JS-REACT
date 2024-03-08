@@ -9,37 +9,62 @@ const appointmentsController = {
     getAllAppointments: async (req, res) => {
 
         try {
-            const allAppointment = await db.Appointment.findAll({
-                include: ['appointmentEmployee', 'appointmentService', 'appointmentClient'],
-                raw: true,
-                nest: true
+            const appointmentAndAvailability = await db.AppointmentAvailability.findAll({
+                include: [
+                    {
+                        model: db.Appointment,
+                        as: 'appointment',
+                        include: [
+                            {
+                                model: db.Service,
+                                as: 'appointmentService',
+                                atributes: ['service_name']
+                            },
+                            {
+                                model: db.Client,
+                                as: 'appointmentClient',
+                                atributes: ['first_name', 'middle_name', 'last_name']
+                            }
+                        ],
+                    },
+                    {
+                        model: db.Availability,
+                        as: 'availability',
+                        include: [
+                            {
+                                model: db.Employee,
+                                as: 'availabilityEmployee',
+                                atributes: ['full_name']
+                            }
+                        ],
+                    },
+                    ],
+                    nest: true,
+                    raw: true
             });
 
-            if (!allAppointment || allAppointment.length === 0 || allAppointment === null) {
-                return res.status(400).json({
-                    error: 'No se encontro la cita'
-                });
-            };
+            console.log(appointmentAndAvailability);
 
-
-
-            const appointmentElementsMap = allAppointment.map((appointment) => ({
-                appointmentId: appointment.appointment_id,
-                client: `${appointment.appointmentClient.first_name} ${appointment.appointmentClient.middle_name} ${appointment.appointmentClient.last_name}`,
-                service: appointment.appointmentService.service_name,
-                employee: appointment.appointmentEmployee.full_name,
-                durationMinutes: appointment.duration_minutes,
-                notes: appointment.notes,
-                isPaid: appointment.is_paid === 0 ? false : true,
-                status: appointment.status,
-                reminder: appointment.reminder === 0 ? false : true,
-                appointmentDetail: `http://localhost:4000/appointmentDetail/${appointment.appointment_id}`
+            const combinedData = appointmentAndAvailability?.map((data) => ({
+                employeeName: data.availability.availabilityEmployee.full_name,
+                appointmentId: data.appointment_id,
+                clientName: `${data.appointment.appointmentClient.first_name} ${data.appointment.appointmentClient.middle_name} ${data.appointment.appointmentClient.last_name}`,
+                serviceName: data.appointment.appointmentService.service_name,
+                duration: data.appointment.duration,
+                notes: data.appointment.notes,
+                duration: data.appointment.duration_minutes,
+                status: data.appointment.status,
+                reminder: data.appointment.reminder,
+                isPaid: data.appointment.is_paid,
+                startTime: data.availability.start_time,
+                endTime: data.availability.end_time,
             }));
-
             
+
             res.status(200).json({
-                allAppointments: appointmentElementsMap
+                allAppointments: combinedData
             });
+
 
         } catch (error) {
             res.status(500).json({
@@ -53,67 +78,141 @@ const appointmentsController = {
     getAppointmentDetail: async (req, res) => {
 
         try {
+            const id = req.params.id;
 
-            const appointmentId = req.params.id;
-
-            const appointment = await db.Appointment.findByPk(appointmentId, {
-                include: ['appointmentEmployee', 'appointmentService', 'appointmentClient'],
-                raw: true,
-                nest: true
+            const appointmentAndAvailability = await db.AppointmentAvailability.findAll({
+                where: { employee_id: id},
+                include: [
+                    {
+                        model: db.Availability,
+                        as: 'availability',
+                        include: [
+                            {
+                                model: db.Employee,
+                                as: 'availabilityEmployee',
+                            },
+                            {
+                                model: db.Appointment,
+                                as: 'availabilityAppointments',
+                                include: [
+                                    {
+                                        model: db.Service,
+                                        as: 'appointmentService',
+                                        attributes: ['service_name']
+                                    }
+                                ]
+                            }
+                        ],
+                    },
+                ],
             });
 
-            if (!appointment || appointment.length === 0 || appointment === null) {
-                return res.status(400).json({
-                    sucess: false,
-                    error: 'No se encontro la cita'
-                });
-            };
-
-            const availability = await db.Availability.findOne({
-                where: {
-                    employee_id: appointment.appointmentEmployee.employee_id
+            const citasEmpleadoFormateadas = appointmentAndAvailability.map((cita) => ({
+                id: cita.id,
+                appointmentId: cita.appointment_id,
+                availabilityId: cita.availability_id,
+                employeeId: cita.employee_id,
+                availability: {
+                  availabilityId: cita.availability.availability_id,
+                  employeeId: cita.availability.employee_id,
+                  startTime: cita.availability.start_time,
+                  endTime: cita.availability.end_time,
+                  availabilityAppointments: cita.availability.availabilityAppointments.map((appointment) => ({
+                    appointmentId: appointment.appointment_id,
+                    clientId: appointment.client_id,
+                    serviceId: appointment.service_id,
+                    employeeId: appointment.employee_id,
+                    duration_minutes: appointment.duration_minutes,
+                    notes: appointment.notes,
+                    status: appointment.status,
+                    reminder: appointment.reminder,
+                    isPaid: appointment.is_paid,
+                    serviceName: appointment.appointmentService.service_name
+                  })),
                 },
-                include: 'availabilityEmployee',
-                raw: true,
-                nest: true
-            });
-
-
-            const appointmentDetail = {
-                appointmentId: appointment.appointment_id,
-                clientId: appointment.client_id,
-                serviceId: appointment.service_id,
-                employeeId: appointment.employee_id,
-                client: `${appointment.appointmentClient.first_name} ${appointment.appointmentClient.middle_name} ${appointment.appointmentClient.last_name}`,
-                service: appointment.appointmentService.service_name,
-                employee: appointment.appointmentEmployee.full_name,
-                notes: appointment.notes,
-                isPaid: appointment.is_paid === 0 ? false : true,
-                status: appointment.status,
-                reminder: appointment.reminder === 0 ? false : true,
-                infoAppointment: availability ? {
-                    month: availability.month,
-                    day: availability.day,
-                    startTime: availability.start_time,
-                    endTime: availability.end_time,
-                    durationMinutes: appointment.duration_minutes,
-                    hour: availability.hour,
-                } : null,
-                appointmentDestroy: `http://localhost:4000/destroyAppointment/${appointment.appointment_id}`,
-                appointmentUpdate: `http://localhost:4000/appointmentUpdate/${appointment.appointment_id}`,
-
-            };
-
-            res.status(200).json({
-                appointmentDetail,
-            });
+              }));
+          
+              // Filtra solo las disponibilidades
+              const disponibilidadesEmpleado = citasEmpleadoFormateadas.map((cita) => cita.availability);
+          
+              res.json({
+                availabilities: disponibilidadesEmpleado,
+              });
 
         } catch (error) {
             res.status(500).json({
-                errorServer: 'error interno del servidor'
+                errorServer: 'Error interno del servidor'
             })
             console.error(error);
-        }
+        };
+
+    },
+
+    getAppointmentUpdate: async (req, res) => {
+
+        try {
+            const id = req.params.id;
+            
+            const appointmentAndAvailability = await db.AppointmentAvailability.findAll({
+                where: { appointment_id: id},
+                include: [
+                    {
+                        model: db.Availability,
+                        as: 'availability',
+                        include: [
+                            {
+                                model: db.Employee,
+                                as: 'availabilityEmployee',
+                            },
+                            {
+                                model: db.Appointment,
+                                as: 'availabilityAppointments',
+                                include: [
+                                    {
+                                        model: db.Service,
+                                        as: 'appointmentService',
+                                        attributes: ['service_name']
+                                    }
+                                ]
+                            }
+                        ],
+                    },
+                ],
+            });
+
+            const citasEmpleadoFormateadas = {
+                id: appointmentAndAvailability[0]?.id,
+                appointmentId: appointmentAndAvailability[0]?.appointment_id,
+                availabilityId: appointmentAndAvailability[0]?.availability_id,
+                employeeId: appointmentAndAvailability[0]?.employee_id,
+                availabilityAppointments: {
+                  availabilityId: appointmentAndAvailability[0]?.availability.availability_id,
+                  employeeId: appointmentAndAvailability[0]?.availability.employee_id,
+                  startTime: appointmentAndAvailability[0]?.availability.start_time,
+                  endTime: appointmentAndAvailability[0]?.availability.end_time,
+                    appointmentId: appointmentAndAvailability[0]?.availability.availabilityAppointments[0].appointment_id,
+                    clientId: appointmentAndAvailability[0]?.availability.availabilityAppointments[0].client_id,
+                    serviceId: appointmentAndAvailability[0]?.availability.availabilityAppointments[0].service_id,
+                    employeeId: appointmentAndAvailability[0]?.availability.availabilityAppointments[0].employee_id,
+                    duration_minutes: appointmentAndAvailability[0]?.availability.availabilityAppointments[0].duration_minutes,
+                    notes: appointmentAndAvailability[0]?.availability.availabilityAppointments[0].notes,
+                    status: appointmentAndAvailability[0]?.availability.availabilityAppointments[0].status,
+                    reminder: appointmentAndAvailability[0]?.availability.availabilityAppointments[0].reminder,
+                    isPaid: appointmentAndAvailability[0]?.availability.availabilityAppointments[0].is_paid,
+                    serviceName: appointmentAndAvailability[0]?.availability.availabilityAppointments[0].appointmentService.service_name
+                },
+              }
+          
+              res.json({
+                appointmentDetail: citasEmpleadoFormateadas,
+              });
+
+        } catch (error) {
+            res.status(500).json({
+                errorServer: 'Error interno del servidor'
+            })
+            console.error(error);
+        };
 
     },
 
@@ -128,7 +227,9 @@ const appointmentsController = {
             }));
 
             if (result.errors.length > 0) {
-                return res.status(400).json({ errors: resultErrorsMap });
+                return res.status(400).json({
+                    errors: resultErrorsMap
+                });
             };
 
             const newAppointment = {
@@ -155,8 +256,9 @@ const appointmentsController = {
 
 
             const appointmentCreate = await db.Appointment.create(newAppointment, {
-                raw: true
+                raw: true, nest: true
             });
+
 
             if (!appointmentCreate || appointmentCreate.length === 0 || appointmentCreate === null) {
                 res.status(400).json({
@@ -165,29 +267,17 @@ const appointmentsController = {
                 })
             };
 
-
-            //Configure Hour increment minutes
-            let currentTime = new Date();
-            const hourString = req.body.hour;
-            const [hours, minutes, seconds] = hourString.split(':');
-            currentTime.setHours(hours, minutes, seconds);
-            currentTime.setMinutes(currentTime.getMinutes() + service.duration_minutes);
-            const endTimeHour = `${currentTime.getHours()}:${currentTime.getMinutes()}:${currentTime.getSeconds()}`;
-
-
             const availability = {
                 employee_id: req.body.employeeId,
-                month: req.body.month,
-                day: req.body.day,
-                hour: req.body.hour,
-                start_time: req.body.hour,
-                end_time: endTimeHour,
+                start_time: req.body.startTime,
+                end_time: req.body.endTime,
             };
 
 
             const createAvailability = await db.Availability.create(availability, {
-                raw: true
+                raw: true, nest: true
             });
+
 
             if (!createAvailability || createAvailability.length === 0 || createAvailability === null) {
                 res.status(400).json({
@@ -196,7 +286,14 @@ const appointmentsController = {
                 })
             };
 
-            console.log('createAvailability', createAvailability);
+
+            db.AppointmentAvailability.create({
+                appointment_id: appointmentCreate.appointment_id,
+                availability_id: createAvailability.availability_id,
+                employee_id: createAvailability.employee_id
+
+            }, {raw: true});
+
 
             res.status(201).json({
                 success: true,
@@ -222,7 +319,9 @@ const appointmentsController = {
             }));
 
             if (result.errors.length > 0) {
-                return res.status(400).json({ errors: resultErrorsMap});
+                return res.status(400).json({
+                    errors: resultErrorsMap
+                });
             };
 
             const appointmentId = req.params.id;
@@ -267,28 +366,18 @@ const appointmentsController = {
                 }
             });
 
-            //Configure Hour increment minutes
-            let currentTime = new Date();
-            const hourString = req.body.hour;
-            const [hours, minutes, seconds] = hourString.split(':');
-            currentTime.setHours(hours, minutes, seconds);
-            currentTime.setMinutes(currentTime.getMinutes() + service.duration_minutes);
-            const endTimeHour = `${currentTime.getHours()}:${currentTime.getMinutes()}:${currentTime.getSeconds()}`;
-
+            const { employeeId, startTime, endTime } = req.body;
 
             const availabilityUpdate = {
-                employee_id: req.body.employeeId,
-                month: req.body.month,
-                day: req.body.day,
-                hour: hourString,
-                start_time: hourString,
-                end_time: endTimeHour,
+                employee_id: employeeId ,
+                start_time: startTime,
+                end_time: endTime,
             };
 
 
             const [rowsUpdateAvailability, updateAvailability] = await db.Availability.update(availabilityUpdate, {
                 where: {
-                    employee_id: req.body.employeeId
+                    employee_id: employeeId
                 }
             });
 
@@ -307,153 +396,75 @@ const appointmentsController = {
     },
 
     destroyAppointment: async (req, res) => {
-        try {
+    try {
+        const appointmentId = req.params.id;
 
-            const appointmentId = req.params.id;
+        const appointment = await db.Appointment.findByPk(appointmentId, {
+            raw: true,
+        });
 
-
-            const appointment = await db.Appointment.findByPk(appointmentId, {
-                raw: true
+        if (!appointment) {
+            return res.status(404).json({
+                success: false,
+                error: "No se encontró la cita",
             });
+        }
+
+        const appointmentAvailabilityToDelete = await db.AppointmentAvailability.findOne({
+            where: {
+                appointment_id: appointmentId,
+            },
+            raw: true,
+        });
+
+        await db.AppointmentAvailability.destroy({
+            where: {
+                appointment_id: appointmentId,
+            },
+            nest: true,
+            raw: true
+        });
 
 
-            if (!appointment || appointment.length === 0 || appointment === null) {
-                return res.status(404).json({
-                    success: false,
-                    error: 'No se encontro la cita'
-                });
-            };
+        const availabilityDestroy = await db.Availability.destroy({
+            where: {
+                availability_id: appointmentAvailabilityToDelete.availability_id,
+            },
+            raw: true,
+        });
 
-            const availability = await db.Appointment.findOne({
-                where: {
-                    employee_id: appointment.employee_id
-                },
-                raw: true
+        if (!availabilityDestroy) {
+            return res.status(500).json({
+                success: false,
+                error: "Error interno, no se eliminó la disponibilidad asociada",
             });
+        }
 
-            if (!availability || availability.length === 0 || availability === null) {
-                return res.status(404).json({
-                    success: false,
-                    error: 'No se encontro la disponibilidad asociada'
-                });
-            };
+        const appointmentDestroy = await db.Appointment.destroy({
+            where: {
+                appointment_id: appointmentId,
+            },
+            raw: true,
+        });
 
-
-            const appointmentDestroy = await db.Appointment.destroy({
-                where: {
-                    appointment_id: appointmentId
-                },
-                raw: true
+        if (!appointmentDestroy) {
+            return res.status(500).json({
+                success: false,
+                error: "Error interno, no se eliminó la cita",
             });
+        }
 
-            if (!appointmentDestroy || appointmentDestroy.length === 0 || appointmentDestroy === null) {
-                return res.status(500).json({
-                    sucess: false,
-                    error: 'error interno, No se elimino la cita'
-                });
-            };
-
-            const availabilityDestroy = await db.Availability.destroy({
-                where: {
-                    employee_id: availability.employee_id
-                },
-                raw: true
-            });
-
-            if (!availabilityDestroy || availabilityDestroy.length === 0 || availabilityDestroy === null) {
-                return res.status(500).json({
-                    sucess: false,
-                    error: 'error interno, No se elimino la disponibilidad asociada'
-                });
-            };
-
-
-            res.status(200).json({
-                success: true,
-                message: 'Cita eliminada exitosamente',
-            });
-
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({
-                error: 'error interno del servidor'
-            });
-        };
-    },
-
-
-
-    getAllEmployees: async (req, res) => {
-
-        try {
-            const allEmployees = await db.Employee.findAll({
-                raw: true,
-                nest: true
-            });
-
-            if (!allEmployees) {
-                res.status(400).json({ error: 'No hay empleados registrados', success: false });
-            };
-
-            const employeeElementsMap = allEmployees.map((employee) => ({
-                employeeId: employee.employee_id,
-                fullName: employee.full_name,
-                phoneNumber: employee.phone_number,
-                email: employee.email,
-                position: employee.position,
-                biography: employee.biography,
-            }));
-
-                
-
-            res.status(200).json({ allEmployees: employeeElementsMap });
-
-        } catch (error) {
-            res.status(500).json({
-                errorServer: 'Error interno del servidor'
-            })
-            console.error(error);
-        };
-
-    },
-
-    getAvailabilityEmployee: async (req, res) => {
-
-        try {
-            const id = req.params.id;
-
-
-            const employeeData = await db.Employee.findAll({
-                where: {
-                    employee_id: id
-                },
-                include: [
-                    {
-                        model: db.Availability,
-                        as: 'employeeAvailability'
-                    },
-                    {
-                        model: db.Appointment,
-                        as: 'employeeAppointment'
-                    }
-                ],
-                nest: true
-            });
-
-
-            res.status(200).json({
-                combinedEmployeeData
-            });
-
-        } catch (error) {
-            res.status(500).json({
-                errorServer: 'Error interno del servidor'
-            })
-            console.error(error);
-        };
-
-    },
-
+        res.status(200).json({
+            success: true,
+            message: "Cita eliminada exitosamente",
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            error: 'Error interno del servidor'
+        });
+    }
+},
 };
 
 module.exports = appointmentsController;

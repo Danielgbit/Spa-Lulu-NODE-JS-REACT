@@ -1,15 +1,13 @@
 const db = require('../database/models');
-const {
-    v4: uuidv4
-} = require('uuid');
+const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcrypt');
 const fs = require('fs');
 const path = require('path');
-const {
-    validationResult
-} = require('express-validator');
+const { validationResult } = require('express-validator');
+const { createAccessToken } = require('../utils/jwt');
 const jwt = require('jsonwebtoken');
-const { use } = require('../routes/mainRoute');
+const { JWT_SECRET } = require('../config');
+
 
 const userController = {
 
@@ -86,9 +84,7 @@ const userController = {
             });
 
         } catch (error) {
-            res.status(500).json({
-                errorServer: 'error interno del servidor'
-            })
+            res.status(500).json({ message: error.msg })
             console.error(error);
         }
 
@@ -97,35 +93,45 @@ const userController = {
     getProfile: async (req, res) => {
 
         try {
-            const token = req.params.token;
-            
-            if (token) {
-                jwt.verify(token, '@asdjasdla_!/(7slDfvc##1335da)=)767', (error, decoded) => {
-                    if (error) {
-                        return res.status(401).json({ success: false, error: 'Token no válido'});
-                    }else{
-                        const user = decoded;
-                        const userModified = {
-                            userId: user.user_id,
-                            firstName: user.first_name,
-                            middleName: user.middle_name,
-                            lastName: user.last_name,
-                            email: user.email,
-                            city: user.city
-                        };
-                        return res.status(200).json({ success: true, user: userModified});
-                    }
-                })
-            }else {
-                return res.status(404).json({ success: false, error: 'Token no válido'});
-                
-            }
+            const { id } = req.user;
+
+            const user = await db.User.findByPk(id, { raw: true });
+
+            if (!user) { res.status(400).json({ message: 'user not found' }); };
+
+            delete user.password;
+            delete user.phone_number;
+            delete user.city;
+
+            res.status(200).json({
+                id: user.user_id,
+                name: `${user?.first_name} ${user?.middle_name} ${user?.last_name}`,
+                email: user.email,
+            });
 
         } catch (error) {
-            res.status(500).json({ error: 'error interno del servidor' })
+            res.status(500).json({ message: error.message });
             console.error(error);
         }
 
+    },
+
+    getVerifyToken: async (req, res) => {
+
+        const { token } = req.cookies;
+
+        jwt.verify(token, JWT_SECRET, async (err, user) => {
+            if (err) return res.status(401).json({ message: 'Unautorized' });
+            const { id } = user;
+            const userFound = await db.User.findByPk(id);
+            if (!userFound) return res.status(401).json({ message: 'Unautorized' });
+
+            res.status(200).json({
+                id: userFound.user_id,
+                name: `${userFound?.first_name} ${userFound.middle_name} ${userFound.last_name}`,
+                email: userFound.email
+            });
+        });
     },
 
     getUserAvatar: async (req, res) => {
@@ -174,6 +180,15 @@ const userController = {
 
     postLoginSession: async (req, res) => {
         try {
+
+            const result = validationResult(req);
+
+            const errorsMap = result.errors.map((err) => ({
+                [err.path]: err.msg
+            }));
+
+            if (result.errors.length > 0) { return res.status(400).json({ errors: errorsMap }); };
+
             const userEmail = req.body.email;
             const userPassword = req.body.password;
 
@@ -185,18 +200,16 @@ const userController = {
             });
 
             if (!user || user === null) {
-                res.status(404).json({
-                    sucess: false,
-                    error: 'Usuario no existente'
+                return res.status(404).json({
+                    message: 'contraseña o email incorrecto'
                 });
             };
 
             const compareSyncPassword = bcrypt.compareSync(userPassword, user.password);
 
             if (!compareSyncPassword || compareSyncPassword === false) {
-                res.status(404).json({
-                    sucess: false,
-                    error: 'Usuario no coincide'
+                return res.status(404).json({
+                    message: 'contraseña o email incorrecto'
                 });
             };
 
@@ -204,23 +217,17 @@ const userController = {
             delete user.avatar;
             delete user.phone_number;
 
-
-            const token = jwt.sign(user, '@asdjasdla_!/(7slDfvc##1335da)=)767');
+            const token = await createAccessToken({ id: user.user_id, });
 
             if (user) {
-                res.cookie('authToken', token, {
-                    maxAge: 900000,
-                    httpOnly: true,
+                res.cookie('token', token, {
+                    sameSite: 'none',
+                    maxAge: 30 * 60 * 1000,
                     secure: true
                 });
             };
 
-            req.session.token = token;
-            res.status(200).json({
-                sucess: true,
-                message: 'Usuario ingreso exitosamente',
-                token
-            });
+            res.status(200).json({ message: 'Ingreso exitoso' });
 
 
             const existingCart = await db.Cart.findOne({
@@ -248,8 +255,6 @@ const userController = {
                 });
             };
 
-
-
         } catch (error) {
             console.error(error);
         }
@@ -266,7 +271,12 @@ const userController = {
             }));
 
             if (result.errors.length > 0) {
-                return res.status(400).json({ errors: errorsMap});
+                if (req.file) {
+                    fs.unlinkSync(path.join(__dirname, `../../public/imgs/users/${req.file.filename}` ))
+                    return res.status(400).json({ errors: errorsMap});
+                }else {
+                    return res.status(400).json({ errors: errorsMap});
+                };
             };
 
             const passwordHashSync = bcrypt.hashSync(req.body.password, 10);
@@ -283,10 +293,23 @@ const userController = {
                 password: passwordHashSync
             };
 
+            const userFound = await db.User.findOne({ 
+                where: { email: newUser.email }, raw: true
+            });
+
+            if (userFound?.length > 0 || userFound) {
+                if (req.file) {
+                    fs.unlinkSync(path.join(__dirname, `../../public/imgs/users/${req.file.filename}` ))
+                    return res.status(400).json({ existing: 'user already existing' });
+                }else{
+                    return res.status(400).json({ existing: 'user already existing' });
+                }
+            };
+
             const userCreate = await db.User.create(newUser);
 
             if (!userCreate || userCreate.length === 0) {
-                res.status(400).json({
+                return res.status(400).json({
                     success: false,
                     createError: 'error al crear el usuario'
                 })
@@ -423,7 +446,6 @@ const userController = {
         }
     },
     
-
     destroyUser: async (req, res) => {
         try {
 

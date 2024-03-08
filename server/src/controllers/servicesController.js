@@ -19,13 +19,30 @@ const servicesController = {
             };
 
             const allServicesLimit = await db.Service.findAll({
+                include: 'serviceCategory',
                 raw: true,
+                nest: true,
                 limit: 4
             });
 
             if (!allServicesLimit) {
                 res.status(400).json({error: 'No se encontraron servicios'})
             };
+
+
+            const allServicesLimitMap = allServicesLimit.map((service) => ({
+                serviceId: service.service_id ,
+                serviceName: service.service_name ,
+                description: service.description,
+                durationMinutes:service.duration_minutes  ,
+                price: service.price ,
+                createdAt: service.created_at ,
+                categoryId: service.category_id ,
+                categoryName: service.serviceCategory.category_name,
+                image: `http://localhost:4000/service/image/${service.service_id}`,
+                serviceDetail: `http://localhost:4000/service/detail/${service.service_id}`
+            }))
+
 
             const allServicesMap = allServices.map((service) => ({
                 serviceId: service.service_id ,
@@ -36,12 +53,13 @@ const servicesController = {
                 createdAt: service.created_at ,
                 categoryId: service.category_id ,
                 categoryName: service.serviceCategory.category_name,
-                image: `http://localhost:4000/image/${service.service_id}`,
-                serviceDetail: `http://localhost:4000/serviceDetail/${service.service_id}`
+                image: `http://localhost:4000/service/image/${service.service_id}`,
+                serviceDetail: `http://localhost:4000/service/detail/${service.service_id}`
             }))
+
     
             res.status(200).json({
-                allServicesLimit: allServicesLimit,
+                allServicesLimit: allServicesLimitMap,
                 allServices: allServicesMap,
             });
             
@@ -135,18 +153,16 @@ const servicesController = {
 
             const id = req.params.id;
 
-            console.log('id', id);
-
             const service = await db.Service.findByPk(id, {
                 include: 'serviceCategory',
                 raw: true,
                 nest: true
             });
 
-            if (service === null) {
-                res.status(404).json({ error: 'Servicio no encontrado' });
-            }
-    
+            if (!service || service.length === 0) {
+                return res.status(404).json({ error: 'Servicio no encontrado' });
+            };
+
             const serviceDetail = {
                 serviceId: service.service_id,
                 serviceName: service.service_name,

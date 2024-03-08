@@ -44,6 +44,7 @@ module.exports = (sequelize, dataTypes) => {
     const Employee = sequelize.define(alias, cols, config);
 
     Employee.associate = (models) => {
+      
         Employee.hasMany(models.Appointment, {
             as: 'employeeAppointment',
             foreignKey: 'employee_id'

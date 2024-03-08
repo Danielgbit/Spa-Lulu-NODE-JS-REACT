@@ -7,23 +7,19 @@ const validateUpdate = require('../validations/appointments/validateAppointUpdat
 
 
 
-// Gets
+// Appointment
 Router.get('/all', appointmentsController.getAllAppointments);
-
-Router.get('/employees/all', appointmentsController.getAllEmployees);
-
-Router.get('/availabilities/:id', appointmentsController.getAvailabilityEmployee);
 
 Router.get('/detail/:id', appointmentsController.getAppointmentDetail);
 
-// Create
+Router.get('/detail/update/:id', appointmentsController.getAppointmentUpdate);
+
 Router.post('/create', validateCreate, appointmentsController.postCreateAppointment);
 
-// Update
 Router.put('/update/:id', validateUpdate, appointmentsController.updateAppointment);
 
-// Destroy
 Router.delete('/destroy/:id', appointmentsController.destroyAppointment);
+
 
 
 module.exports = Router;
