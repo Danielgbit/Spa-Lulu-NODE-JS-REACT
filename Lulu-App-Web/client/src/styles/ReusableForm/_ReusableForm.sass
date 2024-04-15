@@ -1,0 +1,168 @@
+@import '../../styles/_variables.scss'
+
+.reusable-form-body
+    height: 100%
+    background-color: $body-color
+
+    .reusable-form-title
+        font-family: GilRoy
+        width: 100%
+        text-align: center
+        padding-top: 50px
+        text-transform: uppercase
+        font-size: 2rem
+        
+.reusable-form-container
+    width: 24vw
+    padding: 30px
+    display: flex
+    align-items: center
+    justify-content: center
+    flex-direction: column
+    margin: 50px auto
+    border-radius: 1rem
+    background-image: $form-background
+    box-shadow: rgba(0, 0, 0, 0.17) 0px -23px 25px 0px inset, rgba(0, 0, 0, 0.15) 0px -36px 30px 0px inset, rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px
+
+.reusable-crud-form-text-input-wrapper
+    position: relative
+    width: 90%
+    margin: 12px 5px
+    --accent-color: #e583e0
+
+    &:before
+        transition: border-bottom-color 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms
+        border-bottom: 1px solid rgba(0, 0, 0, 0.42)
+
+.reusable-crud-form-text-input-wrapper:before,
+.reusable-crud-form-text-input-wrapper:after
+    content: ""
+    left: 0
+    right: 0
+    position: absolute
+    pointer-events: none
+    bottom: -1px
+    z-index: 4
+    width: 100%
+
+.reusable-crud-form-text-input-wrapper:focus-within:before
+    border-bottom: 1px solid var(--accent-color)
+
+.reusable-crud-form-text-input-wrapper:before
+    transition: border-bottom-color 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms
+    border-bottom: 1px solid rgba(0, 0, 0, 0.42)
+
+.reusable-crud-form-text-input-wrapper:focus-within:before
+    border-bottom: 1px solid var(--accent-color)
+    transform: scaleX(1)
+
+.reusable-crud-form-text-input-wrapper:focus-within:after
+    border-bottom: 2px solid var(--accent-color)
+    transform: scaleX(1)
+
+.reusable-crud-form-text-input-wrapper:after
+    content: ""
+    transform: scaleX(0)
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1) 0ms
+    will-change: transform
+    border-bottom: 2px solid var(--accent-color)
+    border-bottom-color: var(--accent-color)
+
+.textInput::placeholder
+    transition: opacity 250ms cubic-bezier(0, 0, 0.2, 1) 0ms
+    opacity: 1
+    user-select: none
+    color: rgba(255, 255, 255, 0.582)
+    font-family: GilRoy
+
+.reusable-crud-form-text-input-wrapper .textInput
+    border-radius: 5px 5px 0px 0px
+    box-shadow: 0px 2px 5px rgb(35 35 35 / 30%)
+    max-height: 36px
+    background-color: #4a0058
+    transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1)
+    transition-duration: 200ms
+    transition-property: background-color
+    color: #e8e8e8
+    font-size: 11px
+    font-family: Poppins
+    padding: 12px
+    width: 100%
+    border-left: none
+    border-bottom: none
+    border-right: none
+
+.reusable-crud-form-text-input-wrapper .textInput:focus,
+.reusable-crud-form-text-input-wrapper .textInput:active
+    outline: none
+
+.reusable-crud-form-text-input-wrapper:focus-within .textInput,
+.reusable-crud-form-text-input-wrapper .textInput:focus,
+.reusable-crud-form-text-input-wrapper .textInput:active
+    background-color: #54004d
+
+.reusable-form-button
+    position: relative
+    overflow: hidden
+    height: 2rem
+    text-align: center
+    padding: 0 3rem
+    border-radius: 1.5rem
+    background: #31003c
+    background-size: 400%
+    color: #fff
+    border: none
+    cursor: pointer
+    margin-top: 15px
+
+    &:hover::before
+        transform: scaleX(1)
+
+    &::before
+        content: ""
+        position: absolute
+        top: 0
+        left: 0
+        transform: scaleX(0)
+        transform-origin: 0 50%
+        width: 100%
+        height: inherit
+        border-radius: inherit
+        background: linear-gradient(294deg, rgba(161,58,180,1) 0%, rgba(244,7,235,1) 100%, rgba(255,0,242,1) 100%)
+        transition: all 0.475s
+
+.reusable-form-button-content
+    position: relative
+    z-index: 1
+    font-family: GilRoy
+    font-weight: 300
+    font-size: 14px
+
+.reusable-crud-form-text-input-wrapper .input-textArea
+    border-radius: 5px 5px 0px 0px
+    box-shadow: 0px 2px 5px rgb(35 35 35 / 30%)
+    max-height: 100px
+    background-color: #4a0058
+    transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1)
+    transition-duration: 200ms
+    transition-property: background-color
+    color: #e8e8e8
+    font-size: 11px
+    font-family: Poppins
+    padding: 12px
+    width: 100%
+    border-left: none
+    border-bottom: none
+    border-right: none
+    outline: none
+
+    &::placeholder
+        transition: opacity 250ms cubic-bezier(0, 0, 0.2, 1) 0ms
+        opacity: 1
+        user-select: none
+        color: rgba(255, 255, 255, 0.582)
+        font-family: GilRoy
+
+.selectedInput
+    &:selected
+        font-family: GilRoy

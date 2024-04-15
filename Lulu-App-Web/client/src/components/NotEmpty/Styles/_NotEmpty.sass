@@ -1,0 +1,66 @@
+@import '../../../styles/_variables.scss'
+
+.notEmpty-body
+    background-color: $body-color
+    height: 100vh
+    display: flex
+    align-items: center
+    justify-content: space-between
+    flex-direction: column
+
+.notEmpty-container-info
+    display: flex
+    align-items: center
+    flex-direction: column
+    justify-content: space-evenly
+    font-family: Poppins, sans-serif
+    height: 100%
+
+    .notEmpty-info-image
+        width: 150px
+        img
+            object-fit: cover
+
+    .notEmpty-info-paragraph-wrapper
+        display: flex
+        align-items: center
+        justify-content: center 
+        flex-direction: column
+        gap: 30px
+
+        .notEmpty-info-paragraph
+            font-weight: 400
+            font-size: 1.5rem
+            letter-spacing: 1px
+            font-family: Poppins
+            font-weight: 400
+            align-items: center
+            justify-content: center
+            text-align: center
+
+        a
+            background-color: #7b0073
+            padding: 10px 20px
+            border-radius: 10px
+            border: 3px solid #bc58ff
+            color: white
+            font-size: 13px
+            text-transform: uppercase
+            letter-spacing: 3px
+            transition: all 300ms ease-out
+            &:hover
+                transform: translateY(-3px)
+                box-shadow: 6px 6px 14px -6px rgba(182, 0, 214, 1)
+                border: 4px solid #ddaaff
+
+
+@media only screen and (max-width: 424px) 
+    .notEmpty-container-info .notEmpty-info-paragraph-wrapper .notEmpty-info-paragraph 
+        font-size: 17px
+
+@media only screen and (max-width: 278px) 
+    .notEmpty-container-info .notEmpty-info-paragraph-wrapper a 
+        width: 90%
+
+    .notEmpty-container-info .notEmpty-info-paragraph-wrapper .notEmpty-info-paragraph
+        font-size: 14px

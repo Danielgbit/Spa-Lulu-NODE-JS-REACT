@@ -1,0 +1,90 @@
+#body-home {
+    background: #DDBAEF;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+
+    .home-render-section-productsLimit {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+
+.article-home-container-max {
+    display: inline-flex;
+    padding-top: 1.625rem;
+    flex-direction: column;
+    align-items: center;
+    gap: 4.3125rem;
+
+    .title-welcome-article-home {
+        color: #30003a;
+        text-align: center;
+        font-family: Gilroy;
+        font-size: 1.5rem;
+        font-style: normal;
+        font-weight: 800;
+        line-height: normal;
+        text-transform: uppercase;
+    }
+
+    .container-sections-home-article {
+        display: flex;
+        flex-wrap: wrap;
+
+        .section-wrapper-info-article {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2.1875rem;
+            flex: 1 0 0;
+            align-self: stretch;
+            background: linear-gradient(180deg, rgba(255, 196, 255, 0.5) -48.24%, rgba(255, 48, 255, 0.22) 129.75%, rgba(255, 157, 255, 0.19) 129.75%);
+            box-shadow: 2px 4px 5px 0px rgba(96, 81, 103, 0.25);
+            padding: 30px 0;
+
+            span {
+                color: var(--Text-1, #2b0042);
+                text-align: center;
+                font-family: GilRoy, Poppins, sans-serif, serif;
+                font-size: 16px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: normal;
+            }
+
+            img {
+                width: 8.125rem;
+                height: 8.125rem;
+                border-radius: 50%;
+            }
+
+            p {
+                color: #000;
+                text-align: center;
+                font-family: Poppins, sans-serif, serif;
+                letter-spacing: 1px;
+                font-size: 12px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: normal;
+                padding: 20px;
+                margin: 0;
+            }
+        }
+    }
+}
+
+
+@media only screen and (max-width: 606px) {
+    .container-sections-home-article .section-wrapper-info-article {
+        span {
+            font-size: 14px !important;
+        }
+        p{
+            font-size: 11px !important;
+        }
+    }
+}

@@ -1,0 +1,13 @@
+.employee-form-container-max {
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    .employee-form {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+    }
+}

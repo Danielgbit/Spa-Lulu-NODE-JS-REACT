@@ -1,0 +1,96 @@
+.service-detail-container-max {
+    background-color: rgb(250, 170, 238);
+    height: 100vh;
+    width: 100%;
+    padding: 10%;
+    display: flex;
+
+    .container-image-service-detail{
+        height: 500px;
+        width: 500px;
+
+        img{
+            height: 100%;
+            object-fit: cover;
+            width: 100%;
+        }
+    }
+
+    .service-detail-container-content {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        justify-content: space-between;
+        padding-left:50px;
+
+        .service-detail-name {
+            font-family: GilRoy, sans-serif, Poppins;
+            font-weight: 800;
+            font-size: 1rem;
+        }
+
+        .service-detail-description {
+            font-family: Poppins, sans-serif, GilRoy;
+            font-size: 15px;
+        }
+
+        .service-detail-price {
+            font-family: Poppins, sans-serif, GilRoy;
+            font-weight: 800;
+            color: rgb(75, 29, 71);
+            font-size: 2rem;
+        }
+
+        .service-detail-quantity-wrapper {
+            background-color: rgb(115, 28, 102);
+            width: 160px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 10px;
+            font-family: Poppins, sans-serif, GilRoy;
+
+
+            span {
+                color: white;
+                font-size: 10px;
+            }
+            
+
+            button {
+                background-color: transparent;
+                border: none;
+                text-align: center;
+                font-size: 20px;
+                color: white;
+            }
+        }
+
+        .service-detail-add-reserve-wrapper {
+
+            background-color: rgb(115, 28, 102);
+            width: 220px;
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 10px;
+            align-items: center;
+            border-radius: 20px;
+            font-family: Poppins, sans-serif, GilRoy;
+
+                i{
+                    color: white;
+                    font-size: 14px;
+                }
+
+                .service-detail-add-reserve {
+                    background-color: transparent;
+                    border: none;
+                    text-align: center;
+                    font-size: 14px;
+                    color: white;
+                }
+        }
+
+    }
+
+}

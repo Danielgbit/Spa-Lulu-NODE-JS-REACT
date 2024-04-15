@@ -1,0 +1,110 @@
+.card-service-component-container-max
+    width: 220px
+    height: 350px
+    border-radius: 0.6875rem
+    background: linear-gradient(294deg, rgba(161, 29, 224, 1) 0%, rgba(241, 151, 255, 1) 100%)
+    display: flex
+    justify-content: space-between
+    flex-direction: column
+    cursor: pointer
+    transition: all 0.3s ease-in-out
+
+    &:hover
+        box-shadow: 4px 4px 9.3px 0px rgba(0, 0, 0, 0.25)
+        transform: translateY(-2px)
+
+
+        .service-name-card-service
+            background: linear-gradient(294deg, #590580 0%, #c722ba 100%)
+            color: #eec3ff
+            font-weight: 700
+            transition: all 400ms ease-in-out
+            letter-spacing: 1px
+
+
+    .span-add-wrapper
+        display: flex
+        justify-content: center
+        align-items: center
+        width: 7.875rem
+        height: 2rem
+        padding: 0.375rem 1rem
+        border-radius: 3.0625rem
+        border: 1px solid var(--Texto-3, #E393FF)
+        background: #C147C1
+        gap: 0.3125rem
+        margin: 1.19rem 0 0 1.19rem
+        cursor: pointer
+        transition: all 200ms
+        text-transform: uppercase
+        font-size: 11px
+
+        &:hover
+            box-shadow: 2px 4px 4px 0px rgba(0, 0, 0, 0.25)
+            transform: translateY(-1px)
+
+        span
+            color: var(--Text-2, #F2E5F9)
+            font-family: Gilroy
+            font-weight: 400
+
+        i
+            color: var(--Text-2, #F2E5F9)
+            font-size: 20px
+
+    .service-name-card-service
+        color: #FFF
+        font-family: Gilroy
+        font-size: 16px
+        padding: 15px 0 15px 15px
+        margin: 0
+        background: linear-gradient(294deg, rgba(214,128,255,1) 0%, rgba(126,0,115,1) 100%)
+        border-radius: 10px 0
+
+    .paragraph-card-service-container
+        display: flex
+        flex-wrap: wrap
+
+    .price-card-service
+        color: #FFF
+        font-family: poppins, sans-serif, GilRoy
+        font-size: 16px
+        font-weight: 400
+        padding: 0 15px
+        margin: 0
+
+    .img-service-container
+        height: 140px
+        display: flex
+        justify-content: flex-end
+
+        img
+            width: 70%
+            height: 100%
+            border-radius: 50% 0rem 10px 0
+
+//LIMIT SERVICES
+.paragraph-card-service-container
+    font-family: GilRoy, sans-serif, Poppins
+    display: flex
+    align-items: center
+    width: 100%
+    justify-content: space-between
+    padding: 0 15px
+
+    .service-limit-card-durarion
+        font-weight: 600
+        font-size: 12px
+        color: #741198
+
+    .service-limit-card-tag
+        font-size: 11px
+        font-family: Poppins, GilRoy, sans-serif
+
+.service-card-description-container
+    width: 100%
+    padding: 0 15px
+
+    p
+        font-family: Poppins
+        font-size: 11px

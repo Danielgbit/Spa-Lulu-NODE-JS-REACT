@@ -1,0 +1,41 @@
+.Button-Explorar
+    background-color: #eb90ff
+    border-radius: 40px
+    padding: 5px 0
+    font-family: Poppins
+    letter-spacing: 2px
+    text-transform: uppercase
+    transition: all 300ms
+    display: flex
+    align-items: center
+    justify-content: space-evenly
+    gap: 3px
+    width: 12%
+    margin: auto
+
+    &:hover
+        box-shadow: 2px 3px 21.1px 0px rgba(0, 0, 0, 0.25)
+        transform: translateY(-3px)
+        color: white
+        background-color: #380045
+
+.articles-products-button-container
+    width: 100%
+
+@media only screen and (max-width: 1034px)
+    .Button-Explorar 
+        width: 20%
+
+
+@media only screen and (max-width: 675px)
+    .Button-Explorar 
+        width: 30%
+
+        
+@media only screen and (max-width: 452px)
+    .Button-Explorar 
+        width: 50%
+
+@media only screen and (max-width: 322px)
+    .Button-Explorar 
+        width: 90%

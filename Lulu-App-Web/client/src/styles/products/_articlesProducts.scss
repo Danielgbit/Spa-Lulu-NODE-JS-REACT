@@ -1,0 +1,34 @@
+.articles-products-container-max {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    gap: 3.625rem;
+    background: rgba(235, 196, 235, 0.80);
+    box-shadow: 12px 11px 63.7px 0px rgba(0, 0, 0, 0.25);
+    align-items: center;
+    padding: 50px;
+
+    .articles-products-title {
+        width: 100%;
+        color: #4C004C;
+        font-family: Gilroy;
+        font-size: 1.5rem;
+        font-weight: 800;
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+    .articles-products-container-cards{
+        display: flex;
+        align-items: center;
+        gap: 4.25rem;
+        flex-wrap: wrap;
+    }
+
+}
+
+@media only screen and (max-width: 961px) {
+    .articles-products-container-max .articles-products-container-cards{
+        justify-content: center;
+    }
+}

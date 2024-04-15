@@ -1,0 +1,102 @@
+@import '../../../styles/_variables.scss'
+
+.cart-page-container-cards-articles
+    height: 100vh
+    padding: 50px 0
+    display: flex
+    align-items: center
+    justify-content: center
+    flex-direction: column
+    gap: 30px
+    background-color: $body-color
+
+    .cart-page-container-button-confirm
+        margin: 50px 0
+        text-align: center
+        width: 100%
+        height: 100px
+        display: flex
+        flex-direction: column
+        gap: 50px
+
+.cart-total-container
+
+    background: linear-gradient(294deg, rgba(184,33,255,1) 0%, rgba(240,76,255,1) 100%, rgba(224,0,213,1) 100%)
+    width: 20%
+    margin: auto
+    border-radius: 10px
+    padding: 10px 0
+    box-shadow: 1px 2px 7px 0px #00000033
+    color: #ffffff
+
+    .cart-total-text
+        font-family: GilRoy,sans-serif, Poppins
+        font-size: 14px
+
+    .cart-total-price
+        font-family: Poppins,sans-serif, GilRoy
+        font-size: 14px
+
+//BUTTON
+
+.cart-button-checkout
+    position: relative
+    display: flex
+    justify-content: center
+    align-items: center
+    border-radius: 5px
+    background: linear-gradient(294deg, #9608d8 0%, #8f089c 100%, #a00599 100%)
+    font-family: "Montserrat", sans-serif
+    box-shadow: 0px 6px 24px 0px rgba(0, 0, 0, 0.2)
+    overflow: hidden
+    cursor: pointer
+    border: none
+    padding: 20px 0
+    width: 30%
+    margin: auto
+
+.cart-button-checkout:after
+    content: " "
+    width: 0%
+    height: 100%
+    background: #dc72ff
+    position: absolute
+    transition: all 0.4s ease-in-out
+    right: 0
+
+.cart-button-checkout:hover::after
+    right: auto
+    left: 0
+    width: 100%
+
+.cart-button-checkout
+
+    span
+        text-align: center
+        text-decoration: none
+        padding: 18px 25px
+        color: #fff
+        font-size: 1.125em
+        font-weight: 700
+        letter-spacing: 0.3em
+        z-index: 20
+        transition: all 0.3s ease-in-out
+
+    i
+        color: #fff
+        font-size: 1.125em
+
+.cart-button-checkout:hover span,
+.cart-button-checkout:hover i
+    color: #183153
+    animation: scaleUp 0.3s ease-in-out
+
+@keyframes scaleUp
+    0%
+        transform: scale(1)
+
+    50%
+        transform: scale(0.95)
+
+    100%
+        transform: scale(1)

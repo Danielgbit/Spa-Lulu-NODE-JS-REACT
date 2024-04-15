@@ -1,0 +1,128 @@
+@import '../_variables.scss'
+
+.login-body
+    display: flex
+    align-items: center
+    justify-content: center
+    height: 100vh
+    background-color: $body-color
+    gap: 200px
+
+    .login-image-container
+        width: 300px
+
+        img
+            object-fit: cover
+
+    h1
+        font-size: 2rem
+        font-family: GilRoy
+        margin: 0
+        letter-spacing: 3px
+        padding-bottom: 30px
+        text-transform: uppercase
+
+    .login-form-container-redirect
+        font-size: 12px
+        display: flex
+        align-items: center
+        justify-content: center
+        gap: 5px
+
+.login-card-form-container
+    position: relative
+    width: 400px
+    height: 400px
+    z-index: 100 // Aumentar el valor de z-index
+    background: linear-gradient(90deg, #9e00ec 20%, #9500a3 50%)
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
+    padding: 12px
+    gap: 25px
+    border-radius: 8px
+    cursor: pointer
+    color: white
+    font-family: Poppins, sans-serif
+
+.login-inputs-wrapper
+    display: flex
+    gap: 20px
+    flex-direction: column
+
+    .login-InputContainer
+        width: 210px
+        height: 40px
+        display: flex
+        align-items: center
+        justify-content: center
+        background: linear-gradient(to bottom,rgb(242, 0, 255),rgb(120, 0, 156))
+        border-radius: 30px
+        overflow: hidden
+        cursor: pointer
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.075)
+
+        .login-input
+            width: 95%
+            height: 90%
+            outline: none
+            caret-color: rgb(255, 81, 0)
+            background-color: rgb(252, 234, 255)
+            border-radius: 30px
+            padding-left: 15px
+            letter-spacing: 0.8px
+            color: rgb(19, 19, 19)
+            font-size: 12px
+            font-family: Poppins, sans-serif
+
+            &::placeholder
+                font-family: Poppins
+                color: black
+                font-size: 11px
+
+.button
+    background-color: #ffffff00
+    color: #fff
+    width: 8.5em
+    height: 35px
+    border: #ffa8ff 0.2em solid
+    border-radius: 11px
+    text-align: right
+    transition: all 0.6s ease
+    display: flex
+    align-items: center
+    justify-content: center
+
+    &:hover
+        background-color: #720084
+        cursor: pointer
+
+    &:hover i
+        transform: translateX(5px)
+
+    .text
+        margin: 0 1.5em
+        font-size: 13px
+
+    i
+        font-size: 14px
+        transition: all 0.6s ease
+
+@media only screen and (max-width: 1058px)
+    .login-body .login-image-container
+        display: none
+
+@media only screen and (max-width: 472px)
+    .login-card-form-container
+        width: 100%
+        background: transparent
+
+    .button
+        background-color: #fea5fe
+        color: #4c0a54
+        border: #ffa8ff 0.2em solid
+
+        &:hover
+            background-color: #720084
+            color: #fea5fe

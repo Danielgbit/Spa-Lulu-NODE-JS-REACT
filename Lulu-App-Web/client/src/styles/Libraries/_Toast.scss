@@ -1,0 +1,35 @@
+.toast-container-style {
+    position: fixed;
+    top: 20%;
+    left: 40%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+
+    .Toastify__toast-body {
+
+        .Toastify__toast-icon {
+            svg {
+                fill: #ffbcf9;
+            }
+        }
+
+        div {
+            color: white;
+            font-family: Poppins, sans-serif, GilRoy;
+            font-size: 13px;
+        }
+    }
+
+
+    .Toastify__toast {
+        margin-bottom: 15px;
+        background-color: #680068;
+        color: white;
+        border-radius: 8px;
+        text-align: center;
+    }
+
+    .Toastify__progress-bar {
+        background-color: #ffbcf9;
+    }
+}

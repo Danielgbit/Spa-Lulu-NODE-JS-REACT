@@ -1,0 +1,80 @@
+.filter-container
+    background: linear-gradient(294deg, rgba(180, 46, 192, 0.315) 56%, rgba(195, 0, 182, 0.178) 100%, rgba(237, 158, 255, 0.155) 100%)
+    display: flex
+    width: 80%
+    border-radius: 10px
+    padding: 20px 10px
+    box-shadow: 4px 5px 11px -5px rgba(0,0,0,0.75)
+    justify-content: space-between
+    flex-wrap: wrap
+
+    .filter-button
+        font-family: Poppins
+        font-size: 10px
+        background-color: #eec9ff
+        padding: 3px 10px
+        height: 100%
+        border-radius: 5px
+        display: flex
+        gap: 5px
+        align-items: center
+
+        &:hover
+            background-color: #f09aff
+            border: 1px solid #2b0033
+
+    .filter-content-wrapper
+        display: flex
+        flex-direction: column
+        gap: 5px
+
+        .filter-content-text
+            font-family: Poppins
+            font-size: 9px
+            text-align: center
+            padding-bottom: 10px
+
+        .filter-content-startEnd-container
+            display: flex
+            flex-direction: column
+            align-items: center
+
+    .filter-content-buttonSubmit
+        background-color: #4a0058
+        color: white
+        font-family: GilRoy
+        font-size: 14px
+        padding: 2px 0
+        border-radius: 5px
+        transition: all 500ms
+        text-align: center
+
+        &:hover
+            background-color: #e149ff
+            color: black
+
+    input[type="date"]
+        text-transform: uppercase
+        font-family: GilRoy
+
+    .filter-content-select,
+    .filter-content-input
+
+        width: 100px
+        height: 20px
+        font-size: 8px
+        font-family: Poppins
+        border-radius: 5px
+        background-color: #eec9ff
+        border: 1px solid #ff8abd
+        padding: 0 5px
+
+        &:focus
+            background-color: #e4a9ff
+            border: 1px solid #5f0060
+
+.filter-button-container
+    height: 100%
+    display: flex
+    flex-direction: column
+    gap: 5px

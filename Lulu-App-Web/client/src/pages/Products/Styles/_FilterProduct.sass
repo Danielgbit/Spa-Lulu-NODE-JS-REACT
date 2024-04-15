@@ -1,0 +1,54 @@
+.product-filters-container
+    background: linear-gradient(294deg, rgba(243,114,255,1) 47%, rgba(210,18,254,1) 100%, rgba(195,0,183,1) 100%)
+    width: 500px
+    align-items: start
+    justify-content: center
+    display: flex
+    padding: 10px 0
+    border-radius: 15px
+    flex-direction: row
+    gap: 20px
+    box-shadow: 1px 1px 5px 0px rgba(0,0,0,0.75)
+
+    .product-filters-content-wrapper
+        padding: 0 20px
+        display: flex
+        align-items: center
+        justify-content: center
+        gap: 8px
+
+.filters-product-icons
+    font-size: 14px
+    color: #570057
+
+.product-filter-button
+    background-color: #fcbbff
+    font-family: GilRoy
+    font-size: 10px
+
+    &:hover
+        background-color: #fde1ff !important
+        color: black !important
+
+.product-filter-select .ant-select-selector
+    background-color: #fcbbff !important
+
+    .ant-select-selection-item
+
+        font-family: GilRoy
+        font-size: 10px
+
+.ant-select-dropdown
+    background-color: #fcbbff !important
+
+    .ant-select-item-option-content
+        font-size: 11px
+        font-family: GilRoy
+
+
+@media only screen and (max-width: 630px ) 
+    .product-filters-container
+        flex-direction: column 
+        width: 200px
+    
+
