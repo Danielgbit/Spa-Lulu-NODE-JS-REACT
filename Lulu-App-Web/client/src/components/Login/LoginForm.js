@@ -20,8 +20,13 @@ const LoginForm = ({ handleDataForm, errors: e, isIncorrectUser }) => {
 
     return(
         <div className='login-body'>
-            <div className='login-image-container'>
-                <img src="/img/login/Login-ilustration.svg" alt=""/> 
+            <div className='login-info-wrapper'>
+                <div className='login-info-title-container'>
+                    <h2>¡Hola! Para agregar al carrito ingresa tu email y contraseña o crea una cuenta!</h2>
+                </div>
+                <div className='login-image-container'>
+                    <img src="/img/login/Login-ilustration.svg" alt=""/> 
+                </div>
             </div>
             <form onSubmit={handleSubmit(onSubmit)} className="login-card-form-container">
                 <h1>Ingreso</h1>

@@ -34,7 +34,6 @@ const ProductDetailContainer = () => {
     }, [id]);
 
 
-
     return (
         <ProductDetail
             productDetail={productDetail}

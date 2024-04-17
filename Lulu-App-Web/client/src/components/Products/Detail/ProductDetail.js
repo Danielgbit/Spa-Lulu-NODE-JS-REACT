@@ -1,17 +1,25 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { formatNumber } from "../../../utils/numberFormat";
-import { InputNumber } from "antd";
+import { InputNumber, Tag } from "antd";
 import { PlusOutlined, MinusOutlined } from "@ant-design/icons";
 import { Carousel, Image } from "antd";
+import { UserContext } from "../../../Context/UserContext";
+import { Link } from "react-router-dom";
+import { CartContext } from "../../../Context/CartContext";
+import { toast, ToastContainer } from 'react-toastify';
+
 
 const ProductDetail = ({ productDetail, images }) => {
+
+  const { isAutenticated } = useContext(UserContext);
+  const { addProductInCart, loadCart, userId, setMessage, message } = useContext(CartContext);
+  
   const [product, setProduct] = useState([]);
+  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     setProduct(productDetail);
   }, [productDetail]);
-
-  const [quantity, setQuantity] = useState(1);
 
   const increment = () => {
     setQuantity(quantity + 1);
@@ -23,12 +31,26 @@ const ProductDetail = ({ productDetail, images }) => {
     }
   };
 
+  const onClickProductInCart = async (productId, stock) => {
+    if (userId?.length > 0 && productId?.toString.length > 0) {
+        await addProductInCart(productId, stock);
+        loadCart();
+    };
+  };
 
+
+  useEffect(() => {
+    if (message.length > 0) {
+        toast.success(message);
+    }
+    return () => setMessage('');
+  }, [message]);
 
 
   return (
     <div id="product-detail-body">
         <div className="product-detail-container-max" >
+        <ToastContainer  className='toast-container-style'/>
           <div className="product-images-container-max">
             <div className="container-image-product-detail">
               <Carousel className="productDetail-imagePrimary-container">
@@ -47,9 +69,20 @@ const ProductDetail = ({ productDetail, images }) => {
           <div className="product-detail-container-content">
             <span className="product-detail-name">{product.name}</span>
             <p className="product-detail-description">{product.description}</p>
-            <span className="product-detail-price">
-              {formatNumber(product.price)}
-            </span>
+            <div className="productDetail-priceDiscount-container">
+              <span className="product-detail-price">
+                {formatNumber(product.price)}
+              </span>
+              { product.discount > 0 && 
+                <div >
+                  <Tag
+                    className="tag"
+                  >
+                    {product.discount} %
+                  </Tag>
+                </div>
+              }
+            </div>
             <div className="product-detail-quantity-wrapper">
                 { quantity > 1 ? 
                 <div className="custom-input-number-button" onClick={decrement}>
@@ -71,13 +104,15 @@ const ProductDetail = ({ productDetail, images }) => {
                 <PlusOutlined style={{ cursor: 'pointer', fontSize: '14px'}}/>
               </div>
             </div>
-            <span
-              style={{ width: "300px", gap: "10px" }}
-              className="Button-Explorar productDetail-add-cart"
-            >
-              <i class="fa-solid fa-cart-plus"></i>
-              Agregar al carrito
-            </span>
+            { isAutenticated ? (
+              <span onClick={() => onClickProductInCart(product.productId, product.stock)} style={{ width: "300px", gap: "10px" }} className="Button-Explorar productDetail-add-cart">
+                <i class="fa-solid fa-cart-plus"></i> Agregar al carrito
+              </span>
+            ) : (
+              <Link to='/ingreso' style={{ width: "300px", gap: "10px" }} className="Button-Explorar productDetail-add-cart">
+                <i class="fa-solid fa-cart-plus"></i> Agregar al carrito
+              </Link>
+            )}
           </div>
         </div>
     </div>

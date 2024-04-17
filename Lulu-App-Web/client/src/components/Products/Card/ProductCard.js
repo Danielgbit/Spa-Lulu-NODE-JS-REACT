@@ -10,7 +10,6 @@ const ProductCard = ({ products, productsCategoryDetail, productsLimit }) => {
     const [ allProducts, setAllProducts ] = useState(null);
     const [ allProductsCategory, setAllProductsCategory] = useState(null);
     const [ allProductsLimit, setAllProductLimit] = useState(null);
-    const [ images, setImages] = useState([]);
 
 
     useEffect(() => {
@@ -33,6 +32,7 @@ const ProductCard = ({ products, productsCategoryDetail, productsLimit }) => {
             loadCart();
         };
     };
+
 
     if (allProducts) {
         return(
