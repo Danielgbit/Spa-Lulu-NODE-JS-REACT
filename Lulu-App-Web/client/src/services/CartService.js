@@ -12,10 +12,10 @@ export async function getCartDetail (userId) {
   };
 
 
-export async function postAddCart(productId, userId, stock) {
+export async function postAddCart(productId, userId, stock, quantity) {
     try {
         const url = `${host}/cart/add/${userId}`;
-        const res = await axios.post(url, { productId: productId, stock: stock });
+        const res = await axios.post(url, { productId: productId, stock: stock, quantity: quantity });
         return res;
     } catch (e) {
         console.error(e);

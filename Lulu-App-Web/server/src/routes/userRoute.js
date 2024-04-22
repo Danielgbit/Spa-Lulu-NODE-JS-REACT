@@ -7,7 +7,8 @@ const updateValidation = require('../validations/user/userUpdateValidations');
 const loginValidations = require('../validations/user/loginValidations');
 const validateToken = require('../middlewares/validateToken');
 const validateTokenAdmin = require('../middlewares/validateTokenAdmin');
-const validateUserEdit = require('../middlewares/validateUserEdit');
+const sharpUser = require('../middlewares/sharpUserMiddleware');
+
 
 
 
@@ -25,9 +26,9 @@ Router.put('/update/password', validateToken, userController.passwordUpdate);
 
 Router.post('/delete', validateToken, userController.deleteUserAuth);
 
-Router.put('/update', [multerUpload.single('avatar'), updateValidation, validateToken], userController.updateUser);
+Router.put('/update', [multerUpload.single('avatar'), sharpUser, updateValidation, validateToken], userController.updateUser);
 
-Router.post('/register', [multerUpload.single('avatar'), createValidation], userController.postRegisterUser);
+Router.post('/register', [multerUpload.single('avatar'), sharpUser, createValidation], userController.postRegisterUser);
 
 Router.post('/login', loginValidations, userController.postLoginSession);
 

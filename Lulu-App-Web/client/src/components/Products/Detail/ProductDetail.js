@@ -22,7 +22,9 @@ const ProductDetail = ({ productDetail, images }) => {
   }, [productDetail]);
 
   const increment = () => {
-    setQuantity(quantity + 1);
+    if (quantity < product.stock) {
+      setQuantity(quantity + 1);
+    }
   };
 
   const decrement = () => {
@@ -33,7 +35,7 @@ const ProductDetail = ({ productDetail, images }) => {
 
   const onClickProductInCart = async (productId, stock) => {
     if (userId?.length > 0 && productId?.toString.length > 0) {
-        await addProductInCart(productId, stock);
+        await addProductInCart(productId, stock, quantity);
         loadCart();
     };
   };
@@ -83,26 +85,29 @@ const ProductDetail = ({ productDetail, images }) => {
                 </div>
               }
             </div>
-            <div className="product-detail-quantity-wrapper">
-                { quantity > 1 ? 
-                <div className="custom-input-number-button" onClick={decrement}>
-                  <MinusOutlined style={{ cursor: 'pointer', fontSize: '14px'}}/> 
-                </div> : 
-                <div className="custom-input-number-button-stopOutline">
-                  <MinusOutlined className="productDetail-stopOutline"/> 
+            <div className="productDetail-quantity-container">
+              <div className="product-detail-quantity-wrapper">
+                  { quantity > 1 ? 
+                  <div className="custom-input-number-button" onClick={decrement}>
+                    <MinusOutlined style={{ cursor: 'pointer', fontSize: '14px'}}/> 
+                  </div> : 
+                  <div className="custom-input-number-button-stopOutline">
+                    <MinusOutlined className="productDetail-stopOutline"/> 
+                  </div>
+                  }
+                <InputNumber
+                  min={1}
+                  defaultValue={1}
+                  value={quantity}
+                  onChange={(value) => setQuantity(value)}
+                  size="large"
+                  className="custom-input-number"
+                />
+                <div className="custom-input-number-button" onClick={increment}>
+                  <PlusOutlined style={{ cursor: quantity === product.stock ? 'no-drop' : 'pointer', fontSize: '14px'}}/>
                 </div>
-                }
-              <InputNumber
-                min={1}
-                defaultValue={1}
-                value={quantity}
-                onChange={(value) => setQuantity(value)}
-                size="large"
-                className="custom-input-number"
-              />
-              <div className="custom-input-number-button" onClick={increment}>
-                <PlusOutlined style={{ cursor: 'pointer', fontSize: '14px'}}/>
               </div>
+                {quantity === product.stock && <p className="productDetail-stock-limit">Limite de stock</p>}
             </div>
             { isAutenticated ? (
               <span onClick={() => onClickProductInCart(product.productId, product.stock)} style={{ width: "300px", gap: "10px" }} className="Button-Explorar productDetail-add-cart">

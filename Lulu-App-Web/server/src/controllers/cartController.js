@@ -152,8 +152,8 @@ const cartController = {
 
     postCreateProductInCart: async (req, res) => {
 
-        try {
 
+        try {
             const userId = req.params.userId;
 
             const user = await db.User.findByPk(userId, {
@@ -207,7 +207,7 @@ const cartController = {
                 const newProductInCart = {
                     cart_id: cart.cart_id,
                     product_id: req.body.productId,
-                    quantity: 1,
+                    quantity: !req.body.quantity ? 1 : req.body.quantity,
                     stock: 0 || (Number(req.body.stock) - 1),
                     price: productSelected.price,
                     discount: productSelected.discount

@@ -210,7 +210,7 @@ const productsController = {
                 discount: product.discount,
                 categoryId: product.category_id,
                 categoryName: product.productsCategory.category_name,
-                images: `http://localhost:4000/product/images/${product.product_id}`,
+                image: `http://localhost:4000/product/image/${product.product_id}`,
                 productDetail: `http://localhost:4000/productDetail/${product.product_id}`
             }));
 

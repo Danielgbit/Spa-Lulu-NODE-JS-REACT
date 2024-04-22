@@ -5,6 +5,8 @@ const multerUpload = require('../middlewares/multerServices');
 const createValidations = require('../validations/service/serviceCreateValidations');
 const updateValidations = require('../validations/service/serviceUpdateValidations');
 
+const sharpService = require('../middlewares/sharpServiceMiddleware');
+
 
 
 Router.get('/all', serviceController.getAllServices);
@@ -17,7 +19,7 @@ Router.get('/detail/:id', serviceController.getServiceDetail);
 
 Router.get('/image/:serviceId', serviceController.getServiceImage);
 
-Router.post('/create', [multerUpload.single('image'), createValidations], serviceController.postCreateService);
+Router.post('/create', [multerUpload.single('image'), sharpService, createValidations], serviceController.postCreateService);
 
 Router.put('/update/:id', [multerUpload.single('image'), updateValidations], serviceController.updateService);
 

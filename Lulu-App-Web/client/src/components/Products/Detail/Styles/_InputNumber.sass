@@ -36,16 +36,35 @@
     border: 0
 
 .custom-input-number-button
-    padding: 0 20px
+    padding: 10px 20px
+    align-items: center
+    justify-content: center
+    display: flex
 
     &:hover
-        transition: all 400ms ease-in-out
-        transform: translateY(-3px)
-
         .anticon svg
             color: #f5aaff
 
+    &:active
+        background-color: #3d083e
+        border-radius: 10px
+        transform: translateY(-1px)
 
+.productDetail-quantity-container 
+    display: flex
+    align-items: center
+    gap: 5px
+    justify-content: flex-start
+    width: 100%
+
+    .productDetail-stock-limit 
+        font-family: GilRoy, Verdana, Geneva, Tahoma, sans-serif
+        background-color: #4d0a42
+        color: #ffbcf4
+        margin: 0
+        padding: 0 10px
+        border-radius: 5px
+        font-size: 12px
 
 .custom-input-number-button-stopOutline  
     padding: 0 20px

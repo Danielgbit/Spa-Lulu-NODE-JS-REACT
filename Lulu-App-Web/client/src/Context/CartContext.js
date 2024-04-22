@@ -27,9 +27,9 @@ export default function CartProvider({ children }) {
     };
   };
 
-  const addProductInCart = async (productId, stock) => {
+  const addProductInCart = async (productId, stock, quantity) => {
     if (userId?.toString().length > 0) {
-      const res = await postAddCart(productId, userId,  stock);
+      const res = await postAddCart(productId, userId,  stock, quantity);
       if(res?.status === 201 ) { loadCart(); setMessage('Producto agregado al carrito')};
     };
   }; 

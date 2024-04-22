@@ -333,13 +333,11 @@ const userController = {
 
             const result = validationResult(req);
 
-            const errorsMap = result.errors.map((err) => ({
-                [err.path]: err.msg
-            }));
+            const errorsMap = result.errors.map((err) => ({ [err.path]: err.msg }));
 
             if (result.errors.length > 0) {
                 if (req.file) {
-                    fs.unlinkSync(path.join(__dirname, `../../public/imgs/users/${req.file.filename}` ))
+                    fs.unlinkSync(path.join(__dirname, `../../public/imgs/users/${req.avatarFileName}` ))
                     return res.status(400).json({ errors: errorsMap});
                 }else {
                     return res.status(400).json({ errors: errorsMap});
@@ -358,7 +356,7 @@ const userController = {
                 district: req.body.district,
                 email: req.body.email,
                 city: req.body.city,
-                avatar: req.body.avatar === 'false' ? req.body.avatarDefault : req.file.filename,
+                avatar: req.body.avatar === 'false' ? req.body.avatarDefault : req.avatarFileName,
                 password: passwordHashSync
             };
 
@@ -368,7 +366,7 @@ const userController = {
 
             if (userFound?.length > 0 || userFound) {
                 if (req.file) {
-                    fs.unlinkSync(path.join(__dirname, `../../public/imgs/users/${req.file.filename}` ))
+                    fs.unlinkSync(path.join(__dirname, `../../public/imgs/users/${req.avatarFileName}` ))
                     return res.status(400).json({ existing: 'Este usuario ya existe' });
                 }else{
                     return res.status(400).json({ existing: 'Este usuario ya existe' });
@@ -405,7 +403,7 @@ const userController = {
 
             if (result.errors.length > 0) {
                 if (req.file) {
-                    const pathImage = path.join(__dirname, '..', '..', 'public', 'imgs', 'users', req.file.filename);
+                    const pathImage = path.join(__dirname, '..', '..', 'public', 'imgs', 'users', req.avatarFileName);
                     fs.unlinkSync(pathImage)
                     const resultErrorsMap = result.errors.map((error) => ({
                         [error.path]: error.msg
@@ -429,7 +427,7 @@ const userController = {
 
             if (!user || user.length === 0) {
                 if (req.file) {
-                    const pathImage = path.join(__dirname, '..', '..', 'public', 'imgs', 'users', req.file.filename);
+                    const pathImage = path.join(__dirname, '..', '..', 'public', 'imgs', 'users', req.avatarFileName);
                     fs.unlinkSync(pathImage)
                     return res.status(404).json({
                         success: false,
@@ -454,7 +452,7 @@ const userController = {
             if (emailUser) {
                 if (emailUser.email !== user.email) {
                     if (req.file) {
-                        const pathImage = path.join(__dirname, '..', '..', 'public', 'imgs', 'users', req.file.filename);
+                        const pathImage = path.join(__dirname, '..', '..', 'public', 'imgs', 'users', req.avatarFileName);
                         fs.unlinkSync(pathImage)
                         return res.status(409).json({ message: 'el email ya esta en uso' })                        
                     }else {
@@ -484,7 +482,7 @@ const userController = {
                 phone_number: req.body.phoneNumber,
                 email: req.body.email,
                 city: req.body.city,
-                avatar: req.body.avatar === 'false' && req.body.avatarDefault === 'null' ? user.avatar : req.file?.filename || req.body.avatarDefault,
+                avatar: req.body.avatar === 'false' && req.body.avatarDefault === 'null' ? user.avatar : req?.avatarFileName || req.body.avatarDefault,
                 password: user.password,
                 address: req.body.address,
                 district: req.body.district,
@@ -508,6 +506,10 @@ const userController = {
 
         } catch (e) {
             console.error(e);
+            if (req.file) {
+                const pathImage = path.join(__dirname, '..', '..', 'public', 'imgs', 'users', req.avatarFileName);
+                fs.unlinkSync(pathImage);
+            }
             return res.status(500).json({ message: e.message });
         }
     },
