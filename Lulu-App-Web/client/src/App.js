@@ -14,8 +14,6 @@ import ProductContainer from "./pages/Products/ProductContainer";
 import ProductDetailContainer from "./components/Products/Detail/ProductDetailContainer";
 import ProductsFilteredContainer from "./components/Products/List/ProductsFilteredContainer";
 
-import AllServices from "./pages/Service/AllServices";
-import ServiceDetailContainer from "./components/Services/Detail/ServiceDetailContainer";
 import ServiceListContainer from "./components/Services/List/ServiceListContainer";
 
 import AdminContainer from "./pages/DashBoard/AdminContainer";
@@ -72,6 +70,8 @@ import PaymentAdminContainer from "./components/Admin/Payment/PaymentAdminContai
 import ShopHistoryContainer from "./components/User/Shop/ShopHistoryContainer";
 import ShopHistoryDetail from "./components/User/Shop/Detail/ShopHistoryDetail";
 import ShopProductsDetail from "./components/User/Shop/Detail/ShopProductsDetail";
+import ForgotPasswContainer from "./components/User/Password/ForgotPasswContainer";
+import ResetPasswContainer from "./components/User/Password/ResetPasswContainer";
 
 
 function App() {
@@ -83,8 +83,6 @@ function App() {
           </div>
         <Routes>
           <Route path="/" element={<HomeContainer />} />
-{/*           <Route path="/services" element={<AllServices />} />
-          <Route path="/service/:id/detail" element={<ServiceDetailContainer />}/> */}
           <Route path="/services/category/:id" element={<ServiceListContainer />}/>
           <Route path="/products" element={<ProductContainer />} />
           <Route path="/products/category/:id" element={<ProductsFilteredContainer />}/>
@@ -92,9 +90,9 @@ function App() {
           <Route path="/reservas" element={<BookingPageComponent />} />
           <Route path="/ingreso" element={<LoginContainer />} />
           <Route path="/register" element={<RegisterFormContainer />} />
-
-
           <Route path="/admin/login" element={<AdminLoginContainer />} />
+          <Route path="/forgot-password" element={<ForgotPasswContainer />} />
+          <Route path="/reset-password/:token" element={<ResetPasswContainer />} />
         
         <Route element={<ProtectedRouteAdmin/>}>
           <Route path="/admin" element={<AdminContainer />} />

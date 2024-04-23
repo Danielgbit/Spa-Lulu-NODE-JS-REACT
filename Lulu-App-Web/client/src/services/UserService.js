@@ -164,3 +164,23 @@ export async function getShoppingDetail (id) {
         return error.response;
     };
 };
+
+export async function postForgotPassword (data) {
+    try {
+        const response = await axios.post(`http://localhost:4000/user/forgot-password`, { email: data.email });
+        return response;
+    } catch (error) {
+        console.error(error);
+        return error.response;
+    };
+};
+
+export async function getResetPassword (token) {
+    try {
+        const response = await axios.get(`http://localhost:4000/user/reset-password?token=${token}`);
+        return response;
+    } catch (error) {
+        console.error(error);
+        return error.response;
+    };
+};

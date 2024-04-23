@@ -3,7 +3,7 @@ const { body } = require('express-validator');
 const serviceCreateValidations = [
     body('serviceName')
         .notEmpty()
-        .withMessage('El nombre del servicio es obligatorio'),
+        .withMessage('El nombre del servicio es obligatorio').isLength({ max: 100 }),
 
     body('description')
         .notEmpty()
@@ -22,7 +22,7 @@ const serviceCreateValidations = [
         .withMessage('El ID de categoría debe ser un número entero mayor que 0'),
 
     body('image').custom((value, { req }) => {
-        if (!req.file || !req.file.filename) {
+        if (!req.file) {
             throw new Error('El archivo de imagen es obligatorio');
         }
         return true;

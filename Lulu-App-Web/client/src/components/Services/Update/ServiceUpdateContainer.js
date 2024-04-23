@@ -12,6 +12,8 @@ const ServiceUpdateContainer = () => {
     const [ isLoadingCategories, setIsLoadingCategories ] = useState(true);
     const [ isLoadingService, setIsLoadingService ] = useState(true);
     const [ errors, setErrors ] = useState(null);
+    const [ messageErr, setMessageErr ] = useState('');
+
     const navigate = useNavigate();
 
 
@@ -35,15 +37,17 @@ const ServiceUpdateContainer = () => {
 
     const updateService = async (body) => {
         const response = await putService(id, body);
-        console.log(body);
-        if (response?.status === 400) {
-            setErrors(response.data.errors);
-        };
-
-        if (response?.status === 200) {
-            navigate('/admin/service');
-        };
+        if (response?.status === 400) { setErrors(response.data.errors); };
+        if (response?.status === 304) { setMessageErr('Debes modificar algun campo para continuar'); }
+        if (response?.status === 200) { navigate('/admin/service');};
     };
+
+    useEffect(() => {
+        const time = setTimeout(() => {
+            setMessageErr('');
+        }, 4000);
+        return () => clearTimeout(time);
+    }, [messageErr])
 
     useEffect(() => {
         loadCategories();
@@ -58,6 +62,7 @@ const ServiceUpdateContainer = () => {
                     service={service}
                     updateService={updateService}
                     errors={errors}
+                    messageErr={messageErr}
                 />
             )}
         </>

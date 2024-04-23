@@ -67,7 +67,17 @@ const ServiceAdmin = ({ services, destroyService }) => {
     <animated.div style={fadeInProps} className='reusable-body'>
       <Title style={{ fontFamily: 'Poppins' }}>Listado de servicios</Title>
       {services?.length === 0 || !services ? (
-        <Empty description="No hay servicios registrados" />
+        <div className='inventory-container' style={{ 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            flexDirection: 'column',
+            gap: '50px' 
+          }}>
+          <Empty description="No hay servicios registrados" />
+          <Link className='create-container' to={"/service/create"}>
+            <Button type="primary" icon={<i className="fa-solid fa-circle-plus"></i>} />
+          </Link>
+        </div>
       ) : (
         <div className='inventory-container'>
           <Link className='create-container' to={"/service/create"}>

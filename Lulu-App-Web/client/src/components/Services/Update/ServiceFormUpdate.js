@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 
-const ServiceFormUpdate = ({ categories, errors, service, updateService }) => {
+const ServiceFormUpdate = ({ categories, errors, service, updateService, messageErr }) => {
 
     
     function removeSemiColons(numero) {
@@ -115,7 +115,7 @@ const ServiceFormUpdate = ({ categories, errors, service, updateService }) => {
             </div>
                 { errors?.map((e) => e.image && <p className='message-error' >{ e.image}</p>) }
                 { err.image?.type === 'validFileType' && <p className='message-error'>La imagen debe ser de formato JPG, PNG o GIF</p>}
-
+                { messageErr?.length > 0 && <span className='message-error'>{messageErr}</span>}
             <button className="reusable-form-button">
                 <span className="reusable-form-button-content">Guardar</span>
             </button>

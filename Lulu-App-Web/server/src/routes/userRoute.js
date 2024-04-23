@@ -8,11 +8,7 @@ const loginValidations = require('../validations/user/loginValidations');
 const validateToken = require('../middlewares/validateToken');
 const validateTokenAdmin = require('../middlewares/validateTokenAdmin');
 const sharpUser = require('../middlewares/sharpUserMiddleware');
-
-
-
-
-
+const generateToken = require('../middlewares/User/generateToken');
 
 
 
@@ -45,6 +41,12 @@ Router.get('/verify/admin', validateTokenAdmin, userController.getVerifyTokenAdm
 Router.get('/length/All', userController.getLengthUsers);
 
 Router.get('/shopping/history/:id', userController.getShoppingHistory);
+
+Router.post('/forgot-password', generateToken, userController.postForgotPassword);
+
+Router.get('/reset-password', userController.getResetToken);
+
+
 
 
 

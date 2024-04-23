@@ -6,7 +6,10 @@ module.exports = {
     ADMIN_ACCESS: 'LuluCentroEstetica@gmail.com',
     ADMIN_PASSWORD: 'AfSFR4526VmdsaF_-@faf',
 
-    PORT: 4000
+    PORT: 4000,
+
+    EmailNodeMailer: 'danielbitmobb@gmail.com',
+    PasswordNodeMailer: 'hinwpujcpspebspp',
 }
 
     

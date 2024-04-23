@@ -1,6 +1,7 @@
 const multer = require('multer');
 const path = require('path');
 const filePathImage = path.join(__dirname, '..', '..', 'public', 'imgs', 'products');
+/* const timestamp = Math.floor(Math.random() * 1000000000000); */
 
 // Configuración de almacenamiento para la imagen principal
 const storageImagePrimary = multer.diskStorage({

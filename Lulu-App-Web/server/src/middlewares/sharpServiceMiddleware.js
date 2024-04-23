@@ -11,7 +11,7 @@ const sharpService = async (req, res, next) => {
 
     const bufferSharp = sharp(image.buffer)
     .resize(200, 200, {
-        fit: 'contain'
+        fit: 'cover'
     })
     .jpeg({ quality: 75 })
     .png({ compressionLevel: 6 })

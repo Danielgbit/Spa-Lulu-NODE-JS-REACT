@@ -21,7 +21,7 @@ Router.get('/image/:serviceId', serviceController.getServiceImage);
 
 Router.post('/create', [multerUpload.single('image'), sharpService, createValidations], serviceController.postCreateService);
 
-Router.put('/update/:id', [multerUpload.single('image'), updateValidations], serviceController.updateService);
+Router.put('/update/:id', [multerUpload.single('image'), sharpService, updateValidations], serviceController.updateService);
 
 Router.delete('/destroy/:id', serviceController.destroyService);
 

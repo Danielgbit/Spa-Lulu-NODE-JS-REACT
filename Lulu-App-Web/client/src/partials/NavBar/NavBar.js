@@ -110,9 +110,11 @@ const NavBarComponent = () => {
             <Link to={'/'}>
               <li>Inicio</li>
             </Link>
-            <Link to={'/products'}>
-              <li>Productos</li>
-            </Link>
+            {!isAutorized && (
+              <Link to={'/products'}>
+                <li>Productos</li>
+              </Link>
+            )}
             {!isAutenticated && (
               <Link to={'/ingreso'}>
                 <li>Ingreso</li>
@@ -145,9 +147,11 @@ const NavBarComponent = () => {
           </Link>
         )}
 
-        <Link to={"/products"} className="nav-links">
-          productos
-        </Link>
+          {!isAutorized && (
+            <Link to={"/products"} className="nav-links">
+              productos
+            </Link>
+          )}
 
         {!isAutorized && (
           <li className="nav-links">contacto</li>
@@ -174,7 +178,7 @@ const NavBarComponent = () => {
                 <div className="nav-user-name-container">
                   {isAutorized && <span>{`¡Hola! ${admin.name}`}</span>}
                 </div>
-                <i onClick={() => onClickLogout()} className="fa-solid fa-right-from-bracket" ></i>
+                <i onClick={() => onClickLogout()} className="fa-solid fa-right-from-bracket logoutAdmin" ></i>
               </>
               )}
           </>

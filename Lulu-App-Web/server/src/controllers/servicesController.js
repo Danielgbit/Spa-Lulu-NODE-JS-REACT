@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const {validationResult } = require('express-validator');
 
+
 const servicesController = {
 
     getAllServices: async (req, res) => {
@@ -228,18 +229,19 @@ const servicesController = {
     },
 
     postCreateService: async (req, res) => {
-
+        
         try {
-
-
             const result = validationResult(req);
 
-            const resultErrorsMap = result.errors.map((error) => ({
-                [error.path]: error.msg
-            }));
+            const resultErrorsMap = result.errors.map((error) => ({ [error.path]: error.msg }));
 
             if (result.errors.length > 0 ) {
-                return res.status(400).json({ errors: resultErrorsMap});
+                if (req.file) {
+                    fs.unlinkSync(path.join(__dirname, '../../public/imgs/services', req.imageFileName));
+                    return res.status(400).json({ errors: resultErrorsMap});
+                }else {
+                    return res.status(400).json({ errors: resultErrorsMap});
+                }
             };
 
             const newService = {
@@ -248,15 +250,14 @@ const servicesController = {
                 duration_minutes: req.body.durationMinutes,
                 price: req.body.price,
                 category_id: req.body.categoryId,
-                image: req.file.filename
+                image: req.file ? req.imageFileName : null
             };
 
             const serviceCreate = await db.Service.create(newService);
 
             if (!serviceCreate || serviceCreate.length === 0 ) {
-                res.status(400).json({
-                    success: false,
-                    createError: 'error al crear el servicio'})
+                if(req.file) { fs.unlinkSync(path.join(__dirname, '../../public/imgs/services', req.imageFileName)); }
+                return res.status(400).json({ success: false, createError: 'error al crear el servicio'});
             };
 
             res.status(201).json({
@@ -266,6 +267,7 @@ const servicesController = {
 
         } catch (error) {
             console.error(error);
+            if (req.file) { fs.unlinkSync(path.join(__dirname, '../../public/imgs/services', req.imageFileName)) }
             res.status(500).json({errorServer: 'error interno del servidor'});
         };
     },
@@ -278,7 +280,7 @@ const servicesController = {
             
             if (result.errors.length > 0) {
                 if (req.file) {
-                    const pathImage = path.join(__dirname, '..', '..', 'public', 'imgs', 'services', req.file.filename);
+                    const pathImage = path.join(__dirname, '..', '..', 'public', 'imgs', 'services', req.imageFileName);
                     fs.unlinkSync(pathImage) 
                     const resultErrorsMap = result.errors.map((error) => ({ [error.path]: error.msg })); 
                     return res.status(400).json({ errors: resultErrorsMap});
@@ -294,7 +296,7 @@ const servicesController = {
 
             if (!service || service.length === 0) {
                 if (req.file) {
-                    const pathImage = path.join(__dirname, '..', '..', 'public', 'imgs', 'services', req.file.filename);
+                    const pathImage = path.join(__dirname, '..', '..', 'public', 'imgs', 'services', req.imageFileName);
                     fs.unlinkSync(pathImage);
                     res.status(404).json({ success: false, error: 'Id del producto no encontrado' });
                 }else{
@@ -314,7 +316,7 @@ const servicesController = {
                 duration_minutes: req.body.durationMinutes,
                 price: req.body.price,
                 category_id: req.body.categoryId,
-                image: req.file ? req.file.filename : service.image
+                image: req.file ? req.imageFileName : service.image
             }
 
             const [rowsUpdate, updateProduct] = await db.Service.update(serviceUpdate, {
@@ -323,12 +325,9 @@ const servicesController = {
                 }
             });
 
-/*             if (rowsUpdate === 0) {
-                res.status(500).json({
-                    success: false, 
-                    error: 'error interno, no se puedo actualizar el servicio',
-                });
-            }; */
+            if (rowsUpdate === 0) {
+                return res.status(304).json({ message: 'Not modified' });
+            };
 
             res.status(200).json({
                 success: true, 
@@ -336,8 +335,9 @@ const servicesController = {
             });
             
         } catch (error) {
-            res.status(500).json({errorServer: 'error interno del servidor'})
             console.error(error);
+            fs.unlinkSync(path.join(__dirname, '..', '..', 'public', 'imgs', 'services', req.imageFileName));
+            res.status(500).json({errorServer: 'error interno del servidor'})
         }
     },
 

@@ -63,7 +63,6 @@ export async function putService (id, body) {
         formData.append('price', body.price);
         formData.append('image', body.image);
         formData.append('description', body.description);
-        console.log(body);
 
         const url = `http://localhost:4000/service/update/${id}`
         const response = await axios.put(url, formData);

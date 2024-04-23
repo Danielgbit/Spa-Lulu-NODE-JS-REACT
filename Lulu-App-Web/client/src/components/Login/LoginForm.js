@@ -66,6 +66,10 @@ const LoginForm = ({ handleDataForm, errors: e, isIncorrectUser }) => {
                     <i className="fa-regular fa-user"></i>
                     <Link to={'/register'}>¿Aun no tienes una cuenta?</Link>
                 </div>
+                <div className="login-form-container-redirect">
+                    <Link style={{ fontSize: '10px', letterSpacing: '1px', fontFamily: 'GilRoy' }} 
+                    to={'/forgot-password'}>¿Olvidaste tu contraseña?</Link>
+                </div>
             </form>
         </div>
     );

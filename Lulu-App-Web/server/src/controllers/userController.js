@@ -6,7 +6,9 @@ const path = require('path');
 const { validationResult } = require('express-validator');
 const { createAccessToken } = require('../utils/jwt');
 const jwt = require('jsonwebtoken');
-const { JWT_SECRET, ADMIN_ACCESS, ADMIN_PASSWORD, ADMIN_ID, ADMIN_NAME } = require('../config');
+const { JWT_SECRET, ADMIN_ACCESS, ADMIN_PASSWORD, ADMIN_ID, ADMIN_NAME, EmailNodeMailer, PasswordNodeMailer } = require('../config');
+const nodemailer = require('nodemailer');
+const tokenStore = {};
 
 
 const userController = {
@@ -676,6 +678,71 @@ const userController = {
             res.status(200).json({
                 shoppings: ordersMapped
             });
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: error.message });
+        }
+
+    },
+
+    postForgotPassword: async (req, res) => {
+
+        try {
+
+            const { email } = req.body
+            const token = req.crypto
+
+            tokenStore[email] = token;
+
+            const config = { 
+                host: 'smtp.gmail.com',
+                port: 465,
+                secure: true,
+                auth: {
+                    user: EmailNodeMailer,
+                    pass: PasswordNodeMailer
+                }
+            }
+
+            const transporter = nodemailer.createTransport(config);
+
+            const mailOptions = {
+                from: EmailNodeMailer,
+                to: email,
+                subject: 'Restablecer contraseña',
+                text: `Para restablecer tu contraseña, haz clic en el siguiente enlace: http://localhost:3000/reset-password/${token}`
+            };
+
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    console.log(error);
+                    return res.status(500).json({ message: error.message });
+                } else {
+                    console.log('Correo electrónico enviado: ' + info.response);
+                    return res.status(200).json({ message: 'Correo enviado, ¡revisa tu bandeja!' });
+                }
+            });
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: error.message });
+        }
+
+    },
+
+    getResetToken: async (req, res) => {
+
+        try {
+
+            const { token } = req.query;
+            const email = Object.keys(tokenStore).find(key => tokenStore[key] === token);
+
+            if (!email) {
+                return res.status(400).json({ message: 'acceso invalido' });
+            };
+
+            res.status(200).json({ message: 'successfull' });
 
         } catch (error) {
             console.error(error);
